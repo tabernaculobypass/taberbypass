@@ -563,7 +563,7 @@
                 <div id="admin-banners-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
-            <!-- TAB COLEGIO DE TEOLOGÍA EN ADMIN -->
+            <!-- TAB COLEGIO DE TEOLOGÍA EN ADMIN (CON CAMPO DE FOTO) -->
             <div id="tab-teologia" class="admin-tab bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-6 hidden">
                 <h3 class="text-xl font-bold text-gray-900">Administración - Colegio de Teología</h3>
                 <form onsubmit="saveTeologiaCycle(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
@@ -575,6 +575,10 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Horario de Clases</label>
                         <input type="text" id="teo-schedule" placeholder="Sábados 8:00 AM - 12:00 PM" required class="w-full border rounded-lg px-3 py-2 bg-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL Foto del Ciclo (Opcional)</label>
+                        <input type="url" id="teo-img" placeholder="https://ejemplo.com/foto-ciclo.jpg" class="w-full border rounded-lg px-3 py-2 bg-white">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Pensum y Asignaturas (Una materia por línea)</label>
@@ -877,8 +881,8 @@
             ],
             menuItems: mandatoryMenuItems,
             teologiaCycles: [
-                { id: "1", cycleName: "Ciclo I - Fundamentos Teológicos", schedule: "Sábados de 8:00 AM a 12:00 PM", subjects: ["Bibliología y Hermenéutica", "Teología Sistemática I", "Evangelismo Personal"] },
-                { id: "2", cycleName: "Ciclo II - Historia y Epístolas", schedule: "Domingos de 2:00 PM a 5:00 PM", subjects: ["Epístolas Paulinas", "Historia de la Iglesia", "Homilética y Predicación"] }
+                { id: "1", cycleName: "Ciclo I - Fundamentos Teológicos", schedule: "Sábados de 8:00 AM a 12:00 PM", img: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200", subjects: ["Bibliología y Hermenéutica", "Teología Sistemática I", "Evangelismo Personal"] },
+                { id: "2", cycleName: "Ciclo II - Historia y Epístolas", schedule: "Domingos de 2:00 PM a 5:00 PM", img: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1200", subjects: ["Epístolas Paulinas", "Historia de la Iglesia", "Homilética y Predicación"] }
             ],
             blogs: [
                 { id: "1", title: "Perseverando en la prueba", author: "Pastor Roger", date: "1 Oct, 2026", img: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200", content: "La palabra de Dios nos recuerda en Santiago 1:12..." }
@@ -1216,36 +1220,69 @@
                 backBar.classList.remove('hidden');
 
                 const cycles = currentData.teologiaCycles || [];
-                const cyclesHTML = cycles.map(c => `
-                    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-gray-200 space-y-4" data-aos="fade-up">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-2">
-                            <h3 class="text-2xl font-bold text-gray-900">${c.cycleName}</h3>
-                            <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full uppercase">
-                                <i class="fa-solid fa-clock mr-1"></i> ${c.schedule}
-                            </span>
+                const defaultTeoImg = "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200";
+
+                const cyclesHTML = cycles.map(c => {
+                    const cyclePhoto = c.img && c.img.trim() !== '' ? c.img.trim() : defaultTeoImg;
+                    return `
+                        <div class="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col md:flex-row hover:shadow-2xl transition duration-300" data-aos="fade-up">
+                            <div class="md:w-1/3 h-56 md:h-auto relative overflow-hidden flex-shrink-0">
+                                <img src="${cyclePhoto}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden"></div>
+                            </div>
+                            <div class="p-6 sm:p-8 md:w-2/3 space-y-4 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-2">
+                                        <h3 class="text-2xl font-bold text-gray-900">${c.cycleName}</h3>
+                                        <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full uppercase flex-shrink-0">
+                                            <i class="fa-solid fa-clock mr-1"></i> ${c.schedule}
+                                        </span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-700 text-xs uppercase tracking-wider mt-4 mb-2">Pensum y Asignaturas:</h4>
+                                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        ${(c.subjects || []).map(s => `
+                                            <li class="flex items-center space-x-2.5 bg-blue-50/50 p-2.5 rounded-xl border border-blue-100/60">
+                                                <i class="fa-solid fa-book-bookmark text-primary text-xs"></i>
+                                                <span class="text-gray-800 font-semibold text-xs sm:text-sm">${s}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <h4 class="font-bold text-gray-700 text-sm uppercase tracking-wider">Pensum / Asignaturas del Ciclo:</h4>
-                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            ${(c.subjects || []).map(s => `
-                                <li class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                    <i class="fa-solid fa-book-bookmark text-primary"></i>
-                                    <span class="text-gray-800 font-semibold text-sm">${s}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
 
                 dedicatedContent.innerHTML = `
-                    <div class="max-w-5xl mx-auto space-y-8" data-aos="fade-up">
+                    <div class="max-w-5xl mx-auto space-y-10" data-aos="fade-up">
                         <div class="text-center space-y-3">
                             <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Formación Pastoral y Laica</span>
                             <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900">Colegio de Teología</h1>
                             <p class="text-gray-500 text-lg max-w-2xl mx-auto">Capacitándote para el ministerio y el conocimiento profundo de la Palabra de Dios.</p>
                         </div>
 
-                        <div class="space-y-6">
+                        <div class="space-y-8">
                             ${cyclesHTML || '<p class="text-center text-gray-500 py-8">No hay ciclos o materias registradas actualmente.</p>'}
+                        </div>
+
+                        <!-- TARJETA INFORMATIVA MESA DE ATENCIÓN Y PASTOR ROQUE JIMÉNEZ -->
+                        <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-gray-950 p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-amber-400" data-aos="zoom-in">
+                            <div class="space-y-2 text-center md:text-left">
+                                <div class="inline-flex items-center space-x-2 bg-gray-950/10 text-gray-950 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span>Inscripciones e Información</span>
+                                </div>
+                                <h3 class="text-2xl font-black">¿Deseas matricularte o conocer más detalles?</h3>
+                                <p class="text-gray-900 text-sm sm:text-base font-medium max-w-2xl">
+                                    Para mayor información acércate a la <strong>mesa de atención de nuestra iglesia</strong> o comunícate directamente con el <strong>Pastor Roque Jiménez</strong>.
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <button onclick="scrollToSection('#contacto')" class="bg-gray-950 hover:bg-gray-800 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg transition flex items-center space-x-2 text-sm">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <span>Contactar Ahora</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1670,9 +1707,12 @@
             // Colegio Teologia
             document.getElementById('admin-teologia-list').innerHTML = (data.teologiaCycles || []).map(c => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
-                    <div>
-                        <span class="font-bold text-sm text-gray-900">${c.cycleName}</span>
-                        <span class="text-xs text-gray-500 ml-2">(${c.schedule})</span>
+                    <div class="flex items-center space-x-3">
+                        ${c.img ? `<img src="${c.img}" class="w-10 h-10 rounded-lg object-cover">` : ''}
+                        <div>
+                            <span class="font-bold text-sm text-gray-900">${c.cycleName}</span>
+                            <span class="text-xs text-gray-500 ml-2">(${c.schedule})</span>
+                        </div>
                     </div>
                     <div class="flex items-center space-x-2">
                         <button onclick="editTeologiaCycle('${c.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -1796,6 +1836,7 @@
             document.getElementById('teo-edit-id').value = c.id;
             document.getElementById('teo-cycle-name').value = c.cycleName;
             document.getElementById('teo-schedule').value = c.schedule;
+            document.getElementById('teo-img').value = c.img || '';
             document.getElementById('teo-subjects').value = (c.subjects || []).join('\n');
             document.getElementById('teo-btn-submit').innerText = "Actualizar Ciclo";
             document.getElementById('teo-btn-cancel').classList.remove('hidden');
@@ -1805,6 +1846,7 @@
             document.getElementById('teo-edit-id').value = '';
             document.getElementById('teo-cycle-name').value = '';
             document.getElementById('teo-schedule').value = '';
+            document.getElementById('teo-img').value = '';
             document.getElementById('teo-subjects').value = '';
             document.getElementById('teo-btn-submit').innerText = "Guardar Ciclo Teológico";
             document.getElementById('teo-btn-cancel').classList.add('hidden');
@@ -1996,6 +2038,7 @@
                 id: editId || Date.now().toString(),
                 cycleName: document.getElementById('teo-cycle-name').value,
                 schedule: document.getElementById('teo-schedule').value,
+                img: document.getElementById('teo-img').value,
                 subjects: document.getElementById('teo-subjects').value.split('\n').filter(s => s.trim() !== '')
             };
 
@@ -2072,7 +2115,7 @@
                 const idx = currentData.videos.findIndex(v => v.id === editId);
                 if (idx !== -1) currentData.videos[idx] = vidData;
             } else {
-                currentData.videos.unshift(vidData);
+                currentData.videos.push(vidData);
             }
             saveData(currentData);
             cancelVidEdit();
