@@ -50,10 +50,10 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen overflow-x-hidden">
 
-    <!-- HEADER & NAVBAR LINEAL CON PESTAÑA DESPLEGABLE "OTROS" -->
+    <!-- HEADER & NAVBAR CON MENÚ RESPONSIVO (ESCRITORIO Y MÓVIL) -->
     <header class="bg-white/95 backdrop-blur-md shadow-md sticky top-0 z-40 transition-all duration-300 border-b border-gray-100 h-20 flex items-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div class="flex justify-between items-center gap-4">
+            <div class="flex justify-between items-center gap-2">
                 
                 <!-- LOGO Y TÍTULO -->
                 <div class="flex items-center space-x-3 cursor-pointer group flex-shrink-0" onclick="showSingleView('#inicio')">
@@ -62,24 +62,36 @@
                         <img id="nav-brand-img" src="" alt="Logo" class="hidden w-full h-full object-cover rounded-xl">
                     </div>
                     <div>
-                        <span id="nav-brand-title" class="text-lg font-bold tracking-tight text-gray-900 block group-hover:text-primary transition leading-none">Taber by Pass</span>
-                        <span id="nav-brand-subtitle" class="text-[10px] text-gray-500 block uppercase font-medium mt-1">Una iglesia de Fe</span>
+                        <span id="nav-brand-title" class="text-base sm:text-lg font-bold tracking-tight text-gray-900 block group-hover:text-primary transition leading-none">Taber by Pass</span>
+                        <span id="nav-brand-subtitle" class="text-[9px] sm:text-[10px] text-gray-500 block uppercase font-medium mt-1">Una iglesia de Fe</span>
                     </div>
                 </div>
 
-                <!-- NAVEGACIÓN PRINCIPAL LINEAL -->
+                <!-- NAVEGACIÓN PRINCIPAL ESCRITORIO -->
                 <nav id="dynamic-nav-links" class="hidden md:flex items-center space-x-1 lg:space-x-2 font-medium text-xs xl:text-sm whitespace-nowrap py-1">
                     <!-- Los botones principales y la pestaña desplegable "Otros" se renderizan dinámicamente -->
                 </nav>
 
-                <!-- BOTÓN ACCESO ADMIN -->
+                <!-- BOTONES DE ACCIÓN Y MENÚ MÓVIL HAMBURGUESA -->
                 <div class="flex items-center space-x-2 flex-shrink-0">
-                    <button onclick="openLoginModal()" class="bg-gray-900 hover:bg-gray-800 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow transition hover:shadow-md flex items-center space-x-1.5 duration-200">
+                    <button onclick="openLoginModal()" class="bg-gray-900 hover:bg-gray-800 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow transition hover:shadow-md flex items-center space-x-1.5 duration-200">
                         <i class="fa-solid fa-lock text-[10px]"></i>
-                        <span>Panel Admin</span>
+                        <span class="hidden sm:inline">Panel Admin</span>
+                    </button>
+
+                    <!-- BOTÓN HAMBURGUESA PARA MÓVILES -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center shadow hover:bg-secondary transition">
+                        <i id="mobile-menu-icon" class="fa-solid fa-bars text-lg"></i>
                     </button>
                 </div>
 
+            </div>
+        </div>
+
+        <!-- MENÚ DESPLEGABLE MÓVIL -->
+        <div id="mobile-dropdown-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-200 shadow-2xl z-50 transition-all duration-300">
+            <div id="mobile-nav-links" class="p-4 space-y-2 max-h-[80vh] overflow-y-auto">
+                <!-- Se llena dinámicamente -->
             </div>
         </div>
     </header>
@@ -725,7 +737,7 @@
     <!-- AOS JS CDN -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE Y MENÚ DESPLEGABLE "OTROS" -->
+    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE Y SOPORTE MÓVIL COMPLETO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -1081,6 +1093,18 @@
             }
         };
 
+        window.toggleMobileMenu = () => {
+            const menu = document.getElementById('mobile-dropdown-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            menu.classList.toggle('hidden');
+
+            if (!menu.classList.contains('hidden')) {
+                icon.className = "fa-solid fa-xmark text-lg";
+            } else {
+                icon.className = "fa-solid fa-bars text-lg";
+            }
+        };
+
         // CERRAR DESPLEGABLE AL HACER CLIC FUERA
         document.addEventListener('click', (e) => {
             const container = document.getElementById('dropdown-otros-container');
@@ -1091,9 +1115,16 @@
         });
 
         window.showSingleView = (targetLink) => {
-            // CERRAR MENÚ DESPLEGABLE SI ESTÁ ABIERTO
+            // CERRAR MENÚS SI ESTÁN ABIERTOS
             const dropdownMenu = document.getElementById('dropdown-otros-menu');
             if (dropdownMenu) dropdownMenu.classList.add('hidden');
+
+            const mobileMenu = document.getElementById('mobile-dropdown-menu');
+            const mobileIcon = document.getElementById('mobile-menu-icon');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+                if (mobileIcon) mobileIcon.className = "fa-solid fa-bars text-lg";
+            }
 
             const mainContainer = document.getElementById('main-sections-container');
             const dedicatedContainer = document.getElementById('dedicated-view-container');
@@ -1491,20 +1522,20 @@
             const mainNavItems = (data.menuItems || []).filter(item => !dropdownLinks.includes(item.link));
             const dropdownItems = (data.menuItems || []).filter(item => dropdownLinks.includes(item.link));
 
+            // RENDER ESCRITORIO
             let navHTML = mainNavItems.map(item => `
                 <button onclick="showSingleView('${item.link}')" class="text-gray-700 hover:text-primary hover:bg-blue-50 px-2.5 py-1.5 rounded-lg transition font-semibold whitespace-nowrap">
                     ${item.title}
                 </button>
             `).join('');
 
-            // PESTAÑA DESPLEGABLE "OTROS" INTERACTIVA
             navHTML += `
                 <div id="dropdown-otros-container" class="relative inline-block text-left">
                     <button onclick="toggleDropdownOtros()" class="bg-gray-100 hover:bg-primary hover:text-white text-gray-800 px-3 py-1.5 rounded-lg transition font-bold whitespace-nowrap flex items-center space-x-1.5 shadow-sm border border-gray-200">
                         <span>Otros</span>
                         <i class="fa-solid fa-chevron-down text-[10px]"></i>
                     </button>
-                    <div id="dropdown-otros-menu" class="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 hidden z-50 animate-fadeIn">
+                    <div id="dropdown-otros-menu" class="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 hidden z-50">
                         ${dropdownItems.map(subItem => `
                             <button onclick="showSingleView('${subItem.link}')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-primary transition flex items-center justify-between">
                                 <span>${subItem.title}</span>
@@ -1516,6 +1547,16 @@
             `;
 
             document.getElementById('dynamic-nav-links').innerHTML = navHTML;
+
+            // RENDER MÓVIL (COMPLETO Y ORGANIZADO)
+            let mobileNavHTML = (data.menuItems || []).map(item => `
+                <button onclick="showSingleView('${item.link}')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm text-gray-800 hover:bg-primary hover:text-white transition flex items-center justify-between border border-gray-100 bg-gray-50">
+                    <span>${item.title}</span>
+                    <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                </button>
+            `).join('');
+
+            document.getElementById('mobile-nav-links').innerHTML = mobileNavHTML;
 
             // LOGO Y DATOS
             const brandImg = document.getElementById('nav-brand-img');
