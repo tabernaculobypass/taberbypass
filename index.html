@@ -69,7 +69,6 @@
 
                 <!-- NAVEGACIÓN PRINCIPAL ESCRITORIO -->
                 <nav id="dynamic-nav-links" class="hidden md:flex items-center space-x-1 lg:space-x-2 font-medium text-xs xl:text-sm whitespace-nowrap py-1">
-                    <!-- Los botones principales y la pestaña desplegable "Otros" se renderizan dinámicamente -->
                 </nav>
 
                 <!-- BOTONES DE ACCIÓN Y MENÚ MÓVIL HAMBURGUESA -->
@@ -91,7 +90,6 @@
         <!-- MENÚ DESPLEGABLE MÓVIL -->
         <div id="mobile-dropdown-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-200 shadow-2xl z-50 transition-all duration-300">
             <div id="mobile-nav-links" class="p-4 space-y-2 max-h-[80vh] overflow-y-auto">
-                <!-- Se llena dinámicamente -->
             </div>
         </div>
     </header>
@@ -145,7 +143,6 @@
                         <span>Versículo del Día</span>
                     </div>
 
-                    <!-- SELECTOR DE PAISAJES -->
                     <div class="flex flex-wrap justify-center items-center gap-2 mb-2">
                         <span class="text-xs text-gray-300 font-medium mr-2">Elegir Fondo de Paisaje:</span>
                         <button onclick="changeVerseBg('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200')" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-semibold border border-white/20">Montañas</button>
@@ -563,7 +560,7 @@
                 <div id="admin-banners-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
-            <!-- TAB COLEGIO DE TEOLOGÍA EN ADMIN (CON PORTADA, GALERÍA CON LEYENDA Y FOTO DE CICLO 1080x1080) -->
+            <!-- TAB COLEGIO DE TEOLOGÍA EN ADMIN -->
             <div id="tab-teologia" class="admin-tab bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-8 hidden">
                 <div>
                     <h3 class="text-xl font-bold text-gray-900 border-b pb-2 mb-4">Portada y Galería de Teología</h3>
@@ -762,7 +759,7 @@
     <!-- AOS JS CDN -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE Y SOPORTE MÓVIL COMPLETO -->
+    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE Y DEEP LINKING -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -786,6 +783,7 @@
         let hlsInstance = null;
         let bannerInterval = null;
         let currentBannerIndex = 0;
+        let initialUrlChecked = false;
 
         const dailyVersesList = [
             { text: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.", ref: "Juan 3:16" },
@@ -837,7 +835,7 @@
         window.shareVerse = (platform) => {
             const verseText = document.getElementById('daily-verse-text').innerText;
             const verseRef = document.getElementById('daily-verse-ref').innerText;
-            const pageUrl = window.location.href;
+            const pageUrl = window.location.origin + window.location.pathname;
             const message = `📖 *Versículo del Día*\n\n${verseText}\n\n— *${verseRef}*\n\nLee más en: ${pageUrl}`;
 
             if (platform === 'wa') {
@@ -851,10 +849,15 @@
             }
         };
 
+        // RUTA BASE LIMPIA PARA ENLACES COMPARTIDOS
+        function getCleanBaseUrl() {
+            return window.location.origin + window.location.pathname;
+        }
+
         window.shareSermon = (id, platform) => {
             const sermon = (currentData.videos || []).find(v => v.id === id);
             if (!sermon) return;
-            const sermonUrl = `${window.location.origin}${window.location.pathname}?sermon=${id}`;
+            const sermonUrl = `${getCleanBaseUrl()}?sermon=${id}`;
             const message = `🎥 Te invito a ver/escuchar el sermón: "*${sermon.title}*" por ${sermon.author}\n\n${sermonUrl}`;
 
             if (platform === 'wa') {
@@ -863,7 +866,7 @@
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sermonUrl)}`, '_blank');
             } else if (platform === 'copy') {
                 navigator.clipboard.writeText(sermonUrl).then(() => {
-                    alert('¡Enlace del sermón copiado al portapapeles!');
+                    alert('¡Enlace directo del sermón copiado al portapapeles!');
                 });
             }
         };
@@ -871,7 +874,7 @@
         window.shareArticle = (id, platform) => {
             const blog = (currentData.blogs || []).find(b => b.id === id);
             if (!blog) return;
-            const articleUrl = `${window.location.origin}${window.location.pathname}?article=${id}`;
+            const articleUrl = `${getCleanBaseUrl()}?article=${id}`;
             const message = `📖 *${blog.title}*\n\nLee el artículo completo aquí:\n${articleUrl}`;
 
             if (platform === 'wa') {
@@ -880,7 +883,7 @@
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`, '_blank');
             } else if (platform === 'copy') {
                 navigator.clipboard.writeText(articleUrl).then(() => {
-                    alert('¡Enlace del artículo copiado al portapapeles!');
+                    alert('¡Enlace directo del artículo copiado al portapapeles!');
                 });
             }
         };
@@ -956,7 +959,32 @@
             renderAdminLists();
             initBannerCarousel();
             loadDailyVerse();
+
+            // DETECCIÓN AUTOMÁTICA DE ENLACES COMPARTIDOS (DEEP LINKING)
+            if (!initialUrlChecked) {
+                initialUrlChecked = true;
+                checkSharedUrlParameters();
+            }
         });
+
+        function checkSharedUrlParameters() {
+            const params = new URLSearchParams(window.location.search);
+            const sermonId = params.get('sermon');
+            const articleId = params.get('article');
+
+            if (sermonId) {
+                showSingleView('#transmision');
+                setTimeout(() => {
+                    const el = document.getElementById(`sermon-card-${sermonId}`);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el.classList.add('ring-4', 'ring-amber-400');
+                    }
+                }, 400);
+            } else if (articleId) {
+                openBlogModal(articleId);
+            }
+        }
 
         function saveData(data) {
             set(dbRef, data).catch((err) => console.error("Error al guardar en Firebase: ", err));
@@ -1138,7 +1166,6 @@
             }
         };
 
-        // CERRAR DESPLEGABLE AL HACER CLIC FUERA
         document.addEventListener('click', (e) => {
             const container = document.getElementById('dropdown-otros-container');
             const menu = document.getElementById('dropdown-otros-menu');
@@ -1148,7 +1175,6 @@
         });
 
         window.showSingleView = (targetLink) => {
-            // CERRAR MENÚS SI ESTÁN ABIERTOS
             const dropdownMenu = document.getElementById('dropdown-otros-menu');
             if (dropdownMenu) dropdownMenu.classList.add('hidden');
 
@@ -1318,7 +1344,7 @@
                 dedicatedContent.innerHTML = `
                     <div class="max-w-5xl mx-auto space-y-12" data-aos="fade-up">
                         
-                        <!-- PORTADA DESTACADA CON TÍTULO EXCLUSIVO FILIAL SANTA ANA -->
+                        <!-- PORTADA DESTACADA -->
                         <div class="relative rounded-3xl overflow-hidden shadow-2xl min-h-[280px] sm:min-h-[380px] flex items-center justify-center text-center text-white p-6" style="background-image: url('${coverImg}'); background-size: cover; background-position: center;">
                             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-slate-950/30"></div>
                             <div class="relative z-10 space-y-3 max-w-3xl">
@@ -1332,7 +1358,7 @@
                             </div>
                         </div>
 
-                        <!-- SECCIÓN ¿EN QUÉ CONSISTE EL COLEGIO DE TEOLOGÍA? -->
+                        <!-- VISIÓN Y DETALLES -->
                         <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-200 space-y-6" data-aos="fade-up">
                             <div class="text-center max-w-3xl mx-auto space-y-2">
                                 <span class="text-primary text-xs font-bold uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Visión Académica y Espiritual</span>
@@ -1369,10 +1395,10 @@
                             </div>
                         </div>
 
-                        <!-- GALERÍA DE PROMOCIONES -->
+                        <!-- GALERÍA -->
                         ${galleryHTML}
 
-                        <!-- CICLOS Y PENSUM CON FOTO CUADRADA OPTIMIZADA -->
+                        <!-- CICLOS -->
                         <div class="space-y-6">
                             <h3 class="text-2xl font-bold text-gray-900 border-b pb-2 flex items-center space-x-2">
                                 <i class="fa-solid fa-list-check text-primary"></i>
@@ -1381,7 +1407,7 @@
                             ${cyclesHTML || '<p class="text-center text-gray-500 py-8">No hay ciclos o materias registradas actualmente.</p>'}
                         </div>
 
-                        <!-- TARJETA INFORMATIVA MESA DE ATENCIÓN Y PASTOR ROQUE JIMÉNEZ -->
+                        <!-- ATENCIÓN -->
                         <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-gray-950 p-8 sm:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-amber-400" data-aos="zoom-in">
                             <div class="space-y-2 text-center md:text-left">
                                 <div class="inline-flex items-center space-x-2 bg-gray-950/10 text-gray-950 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
@@ -1526,7 +1552,7 @@
             return videoList.map(v => {
                 const hasAudio = v.audioUrl && v.audioUrl.trim() !== '';
                 return `
-                    <div class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300" data-aos="fade-up">
+                    <div id="sermon-card-${v.id}" class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300" data-aos="fade-up">
                         <div>
                             <div class="aspect-video w-full bg-black">
                                 <iframe class="w-full h-full" src="https://www.youtube.com/embed/${parseYtEmbed(v.ytId)}" frameborder="0" allowfullscreen></iframe>
@@ -1571,7 +1597,7 @@
         function renderBlogsHTML(blogList) {
             if (!blogList || blogList.length === 0) return `<p class="text-gray-500">No hay publicaciones.</p>`;
             return blogList.map(b => `
-                <div class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300" data-aos="fade-up">
+                <div id="blog-card-${b.id}" class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300" data-aos="fade-up">
                     <div onclick="openBlogModal('${b.id}')" class="cursor-pointer">
                         <img src="${b.img}" class="w-full h-48 object-cover">
                         <div class="p-6">
@@ -1612,7 +1638,7 @@
 
         window.closeBlogModal = () => document.getElementById('blog-modal').classList.add('hidden');
 
-        // REPRODUCTOR MULTI-EMISORA CONTROLADO
+        // REPRODUCTOR MULTI-EMISORA
         window.toggleRadio = (id) => {
             const otherId = id === '1' ? '2' : '1';
             const player = document.getElementById(`radio-audio-player-${id}`);
@@ -1670,13 +1696,11 @@
         function renderPublicSite() {
             const data = currentData;
             
-            // SEPARAR ELEMENTOS PRINCIPALES Y MENÚ DESPLEGABLE DE OTROS
             const dropdownLinks = ['#plan-salvacion', '#biblia', '#banner-eventos', '#galeria'];
             
             const mainNavItems = (data.menuItems || []).filter(item => !dropdownLinks.includes(item.link));
             const dropdownItems = (data.menuItems || []).filter(item => dropdownLinks.includes(item.link));
 
-            // RENDER ESCRITORIO
             let navHTML = mainNavItems.map(item => `
                 <button onclick="showSingleView('${item.link}')" class="text-gray-700 hover:text-primary hover:bg-blue-50 px-2.5 py-1.5 rounded-lg transition font-semibold whitespace-nowrap">
                     ${item.title}
@@ -1702,7 +1726,6 @@
 
             document.getElementById('dynamic-nav-links').innerHTML = navHTML;
 
-            // RENDER MÓVIL (COMPLETO Y ORGANIZADO)
             let mobileNavHTML = (data.menuItems || []).map(item => `
                 <button onclick="showSingleView('${item.link}')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm text-gray-800 hover:bg-primary hover:text-white transition flex items-center justify-between border border-gray-100 bg-gray-50">
                     <span>${item.title}</span>
@@ -1712,7 +1735,6 @@
 
             document.getElementById('mobile-nav-links').innerHTML = mobileNavHTML;
 
-            // LOGO Y DATOS
             const brandImg = document.getElementById('nav-brand-img');
             const brandIcon = document.getElementById('nav-brand-icon');
             if (data.config.logoUrl && data.config.logoUrl.trim() !== "") {
@@ -1729,12 +1751,10 @@
             document.getElementById('hero-title').innerText = data.config.heroTitle || "Un lugar de esperanza y salvación";
             document.getElementById('hero-subtitle').innerText = data.config.heroSub || "";
 
-            // FOOTER & INFORMACIÓN DE CONTACTO
             document.getElementById('footer-address').innerHTML = `<i class="fa-solid fa-location-dot text-primary mr-2"></i> ${data.config.address || "Dirección Principal"}`;
             document.getElementById('footer-phone').innerHTML = `<i class="fa-solid fa-phone text-primary mr-2"></i> ${data.config.phone || "+00 0000-0000"}`;
             document.getElementById('footer-email').innerHTML = `<i class="fa-solid fa-envelope text-primary mr-2"></i> ${data.config.email || "contacto@taberbypass.org"}`;
 
-            // REDES SOCIALES HERO
             const socialBox = document.getElementById('social-links-container');
             let socialHTML = '';
             if (data.config.fb) socialHTML += `<a href="${data.config.fb}" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition"><i class="fa-brands fa-facebook-f"></i></a>`;
@@ -1785,7 +1805,6 @@
 
         window.closeAlbumModal = () => document.getElementById('album-view-modal').classList.add('hidden');
 
-        // RENDERING DE LISTAS ADMIN
         function renderAdminLists() {
             const data = currentData;
             document.getElementById('cfg-brand').value = data.config.brand || "";
@@ -1804,11 +1823,9 @@
             document.getElementById('cfg-tk').value = data.config.tk || "";
             document.getElementById('cfg-wa').value = data.config.wa || "";
 
-            // Teología Admin Data
             document.getElementById('teo-cover-url').value = data.teologiaCover || "";
             document.getElementById('teo-gallery-urls').value = (data.teologiaGallery || []).join('\n');
 
-            // Banners
             document.getElementById('admin-banners-list').innerHTML = (data.banners || []).map(b => `
                 <div class="bg-gray-50 p-4 rounded-xl border flex items-center justify-between">
                     <div class="flex items-center space-x-3 overflow-hidden">
@@ -1825,7 +1842,6 @@
                 </div>
             `).join('');
 
-            // Colegio Teologia
             document.getElementById('admin-teologia-list').innerHTML = (data.teologiaCycles || []).map(c => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
                     <div class="flex items-center space-x-3">
@@ -1842,7 +1858,6 @@
                 </div>
             `).join('');
 
-            // Menú
             document.getElementById('admin-menu-list').innerHTML = (data.menuItems || []).map(m => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
                     <div>
@@ -1856,7 +1871,6 @@
                 </div>
             `).join('');
 
-            // Blog
             document.getElementById('admin-blog-list').innerHTML = (data.blogs || []).map(b => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
                     <div class="flex items-center space-x-3 overflow-hidden">
@@ -1873,7 +1887,6 @@
                 </div>
             `).join('');
 
-            // Sermones
             document.getElementById('admin-videos-list').innerHTML = (data.videos || []).map(v => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
                     <div>
@@ -1887,7 +1900,6 @@
                 </div>
             `).join('');
 
-            // Galería
             document.getElementById('admin-albums-list').innerHTML = (data.albums || []).map(a => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
                     <div class="flex items-center space-x-3 overflow-hidden">
@@ -1904,7 +1916,6 @@
                 </div>
             `).join('');
 
-            // Horarios
             document.getElementById('admin-schedules-list').innerHTML = (data.schedules || []).map(s => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
                     <div>
@@ -1919,7 +1930,6 @@
             `).join('');
         }
 
-        // FUNCIONES DE EDICIÓN Y BORRADO
         window.deleteItem = (category, id) => {
             if (confirm('¿Estás seguro de borrar este registro?')) {
                 currentData[category] = (currentData[category] || []).filter(item => item.id !== id);
