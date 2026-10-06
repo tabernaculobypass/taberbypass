@@ -1283,3 +1283,1103 @@
                 dedicatedContainer.classList.remove('hidden');
                 badge.innerText = "Plan de Salvación";
                 backBar.classList.remove('hidden');
+
+                dedicatedContent.innerHTML = `
+                    <div class="max-w-4xl mx-auto space-y-10" data-aos="fade-up">
+                        <div class="text-center space-y-4">
+                            <span class="bg-amber-500/20 text-amber-800 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-amber-500/30">
+                                Tabernáculo Bíblico Bautista Amigos de Israel
+                            </span>
+                            <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900">El Plan de Salvación</h1>
+                            <p class="text-gray-600 text-lg max-w-2xl mx-auto">Dios te ama y tiene un propósito maravilloso para tu vida. Conoce el camino para recibir la vida eterna.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-blue-100 flex items-start space-x-4">
+                                <div class="bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold flex-shrink-0">1</div>
+                                <div class="space-y-2">
+                                    <h3 class="text-xl font-bold text-gray-900">Dios te ama y ofrece un plan para tu vida</h3>
+                                    <p class="text-gray-600">"Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna." — <strong class="text-primary">Juan 3:16</strong></p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-blue-100 flex items-start space-x-4">
+                                <div class="bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold flex-shrink-0">2</div>
+                                <div class="space-y-2">
+                                    <h3 class="text-xl font-bold text-gray-900">El ser humano es pecador y está separado de Dios</h3>
+                                    <p class="text-gray-600">"Por cuanto todos pecaron, y están destituidos de la gloria de Dios." — <strong class="text-primary">Romanos 3:23</strong></p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-blue-100 flex items-start space-x-4">
+                                <div class="bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold flex-shrink-0">3</div>
+                                <div class="space-y-2">
+                                    <h3 class="text-xl font-bold text-gray-900">Jesucristo es el único camino hacia Dios</h3>
+                                    <p class="text-gray-600">"Jesús le dijo: Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí." — <strong class="text-primary">Juan 14:6</strong></p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-blue-100 flex items-start space-x-4">
+                                <div class="bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold flex-shrink-0">4</div>
+                                <div class="space-y-2">
+                                    <h3 class="text-xl font-bold text-gray-900">Debemos recibir a Cristo personalmente</h3>
+                                    <p class="text-gray-600">"Mas a todos los que le recibieron, a los que creen en su nombre, les dio potestad de ser hechos hijos de Dios." — <strong class="text-primary">Juan 1:12</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-blue-900 to-indigo-950 text-white p-8 sm:p-12 rounded-3xl shadow-2xl text-center space-y-6">
+                            <h3 class="text-2xl sm:text-3xl font-bold">Oración de Fe y Aceptación</h3>
+                            <p class="text-blue-100 italic font-serif text-lg leading-relaxed max-w-2xl mx-auto">
+                                "Señor Jesús, reconozco que soy pecador. Creo que moriste por mí en la cruz y resucitaste. Te abro las puertas de mi corazón y te recibo como mi Señor y Salvador personal. Perdona mis pecados y escribe mi nombre en el Libro de la Vida. Amén."
+                            </p>
+                            <div class="pt-2">
+                                <button onclick="scrollToSection('#contacto')" class="bg-amber-400 hover:bg-amber-500 text-gray-950 font-bold px-8 py-3.5 rounded-xl shadow transition">
+                                    ¿Hiciste esta oración? Escríbenos aquí
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => { if (window.AOS) AOS.refresh(); }, 100);
+            } else if (cleanLink === '#teologia') {
+                mainContainer.classList.add('hidden');
+                dedicatedContainer.classList.remove('hidden');
+                badge.innerText = "Colegio de Teología";
+                backBar.classList.remove('hidden');
+
+                const coverImg = currentData.teologiaCover || "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200";
+                const galleryItems = currentData.teologiaGallery || [];
+                const cycles = currentData.teologiaCycles || [];
+                const defaultCycleImg = "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1080";
+
+                const cyclesHTML = cycles.map(c => {
+                    const cyclePhoto = c.img && c.img.trim() !== '' ? c.img.trim() : defaultCycleImg;
+                    return `
+                        <div class="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col md:flex-row hover:shadow-2xl transition duration-300" data-aos="fade-up">
+                            <div class="md:w-5/12 h-64 md:h-auto relative overflow-hidden flex-shrink-0 bg-gray-100">
+                                <img src="${cyclePhoto}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6 sm:p-8 md:w-7/12 space-y-4 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-2">
+                                        <h3 class="text-2xl font-bold text-gray-900">${c.cycleName}</h3>
+                                        <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full uppercase flex-shrink-0">
+                                            <i class="fa-solid fa-clock mr-1"></i> ${c.schedule}
+                                        </span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-700 text-xs uppercase tracking-wider mt-4 mb-2">Pensum y Asignaturas:</h4>
+                                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        ${(c.subjects || []).map(s => `
+                                            <li class="flex items-center space-x-2.5 bg-blue-50/50 p-2.5 rounded-xl border border-blue-100/60">
+                                                <i class="fa-solid fa-book-bookmark text-primary text-xs"></i>
+                                                <span class="text-gray-800 font-semibold text-xs sm:text-sm">${s}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const galleryHTML = galleryItems.length > 0 ? `
+                    <div class="space-y-4" data-aos="fade-up">
+                        <div class="text-center sm:text-left">
+                            <h3 class="text-2xl font-bold text-gray-900 flex items-center justify-center sm:justify-start space-x-2">
+                                <i class="fa-solid fa-graduation-cap text-primary"></i>
+                                <span>Galería de Promociones y Estudiantes</span>
+                            </h3>
+                            <p class="text-gray-500 text-sm mt-1">Nuestras promociones graduadas y momentos especiales del colegio</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                            ${galleryItems.map(item => {
+                                const parts = item.split('|');
+                                const imgUrl = parts[0] ? parts[0].trim() : '';
+                                const caption = parts[1] ? parts[1].trim() : '';
+                                if (!imgUrl) return '';
+                                return `
+                                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 flex flex-col">
+                                        <div class="h-52 overflow-hidden bg-gray-100">
+                                            <img src="${imgUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                                        </div>
+                                        ${caption ? `
+                                            <div class="p-3.5 bg-gray-50 border-t border-gray-100 flex-grow flex items-center justify-center text-center">
+                                                <p class="text-xs font-bold text-gray-700 leading-snug"><i class="fa-solid fa-camera text-primary mr-1"></i> ${caption}</p>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                ` : '';
+
+                dedicatedContent.innerHTML = `
+                    <div class="max-w-5xl mx-auto space-y-12" data-aos="fade-up">
+                        
+                        <!-- PORTADA DESTACADA -->
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl min-h-[280px] sm:min-h-[380px] flex items-center justify-center text-center text-white p-6" style="background-image: url('${coverImg}'); background-size: cover; background-position: center;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-slate-950/30"></div>
+                            <div class="relative z-10 space-y-3 max-w-3xl">
+                                <span class="bg-amber-400 text-gray-950 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow">
+                                    Formación Pastoral y Laica
+                                </span>
+                                <h1 class="text-3xl sm:text-5xl font-extrabold drop-shadow-md">Colegio de Teología de El Salvador Filial Santa Ana</h1>
+                                <p class="text-gray-200 text-base sm:text-xl font-light drop-shadow max-w-2xl mx-auto">
+                                    Capacitándote para el ministerio, la enseñanza bíblica y el conocimiento profundo de la Palabra de Dios.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- VISIÓN Y DETALLES -->
+                        <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-200 space-y-6" data-aos="fade-up">
+                            <div class="text-center max-w-3xl mx-auto space-y-2">
+                                <span class="text-primary text-xs font-bold uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Visión Académica y Espiritual</span>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900">¿En qué consiste el Colegio de Teología?</h2>
+                                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                                    Es un programa académico integral diseñado para edificar a miembros, líderes y creyentes que desean profundizar en la interpretación correcta de las Escrituras (Hermenéutica), la Teología Sistemática y la Historia Cristiana.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center space-y-3">
+                                    <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto text-xl font-bold">
+                                        <i class="fa-solid fa-book-open"></i>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 text-lg">Fundamento Bíblico</h4>
+                                    <p class="text-gray-500 text-xs sm:text-sm">Estudio sistemático de los libros de la Biblia y doctrinas fundamentales de la fe.</p>
+                                </div>
+
+                                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center space-y-3">
+                                    <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto text-xl font-bold">
+                                        <i class="fa-solid fa-chalkboard-user"></i>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 text-lg">Capacitación Ministerial</h4>
+                                    <p class="text-gray-500 text-xs sm:text-sm">Herramientas prácticas para la predicación, enseñanza y servicio en la comunidad.</p>
+                                </div>
+
+                                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center space-y-3">
+                                    <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto text-xl font-bold">
+                                        <i class="fa-solid fa-certificate"></i>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 text-lg">Acreditación y Diplomas</h4>
+                                    <p class="text-gray-500 text-xs sm:text-sm">Reconocimiento al culminar satisfactoriamente los módulos de estudio.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GALERÍA -->
+                        ${galleryHTML}
+
+                        <!-- CICLOS -->
+                        <div class="space-y-6">
+                            <h3 class="text-2xl font-bold text-gray-900 border-b pb-2 flex items-center space-x-2">
+                                <i class="fa-solid fa-list-check text-primary"></i>
+                                <span>Ciclos Teológicos Disponibles</span>
+                            </h3>
+                            ${cyclesHTML || '<p class="text-center text-gray-500 py-8">No hay ciclos o materias registradas actualmente.</p>'}
+                        </div>
+
+                        <!-- ATENCIÓN -->
+                        <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-gray-950 p-8 sm:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-amber-400" data-aos="zoom-in">
+                            <div class="space-y-2 text-center md:text-left">
+                                <div class="inline-flex items-center space-x-2 bg-gray-950/10 text-gray-950 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span>Inscripciones e Información</span>
+                                </div>
+                                <h3 class="text-2xl font-black">¿Deseas matricularte o conocer más detalles?</h3>
+                                <p class="text-gray-900 text-sm sm:text-base font-medium max-w-2xl">
+                                    Para mayor información acércate a la <strong>mesa de atención de nuestra iglesia</strong> o comunícate directamente con el <strong>Pastor Roque Jiménez</strong>.
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <button onclick="scrollToSection('#contacto')" class="bg-gray-950 hover:bg-gray-800 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg transition flex items-center space-x-2 text-sm">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <span>Contactar Ahora</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => { if (window.AOS) AOS.refresh(); }, 100);
+            } else if (cleanLink === '#biblia') {
+                mainContainer.classList.add('hidden');
+                dedicatedContainer.classList.remove('hidden');
+                badge.innerText = "Santa Biblia RV1960";
+                backBar.classList.remove('hidden');
+
+                dedicatedContent.innerHTML = `
+                    <div class="text-center mb-8" data-aos="fade-up">
+                        <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Lectura Bíblica</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2">Santa Biblia - Reina Valera 1960</h2>
+                        <p class="text-gray-500 mt-2">Lee y medita en la Palabra de Dios</p>
+                    </div>
+
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-gray-200 max-w-4xl mx-auto space-y-6" data-aos="zoom-in">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Libro:</label>
+                                <select id="bible-book-select" onchange="fetchBibleChapter()" class="w-full border rounded-xl p-3 bg-gray-50 text-sm font-semibold">
+                                    <option value="GEN">Génesis</option>
+                                    <option value="EXO">Éxodo</option>
+                                    <option value="PSA" selected>Salmos</option>
+                                    <option value="PRO">Proverbios</option>
+                                    <option value="MAT">San Mateo</option>
+                                    <option value="JHN">San Juan</option>
+                                    <option value="ROM">Romanos</option>
+                                    <option value="REV">Apocalipsis</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Capítulo:</label>
+                                <input type="number" id="bible-chapter-input" value="23" min="1" max="150" onchange="fetchBibleChapter()" class="w-full border rounded-xl p-3 bg-gray-50 text-sm font-semibold">
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="fetchBibleChapter()" class="w-full bg-primary hover:bg-secondary text-white font-bold p-3 rounded-xl transition shadow flex items-center justify-center space-x-2">
+                                    <i class="fa-solid fa-book-open"></i>
+                                    <span>Cargar Capítulo</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="bible-verses-container" class="border-t pt-6 text-gray-800 leading-relaxed font-serif text-lg space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div>
+                    </div>
+                `;
+                fetchBibleChapter();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => { if (window.AOS) AOS.refresh(); }, 100);
+            } else if (cleanLink === '#transmision') {
+                mainContainer.classList.add('hidden');
+                dedicatedContainer.classList.remove('hidden');
+                badge.innerText = "Sermones";
+                backBar.classList.remove('hidden');
+
+                const sermons = currentData.videos || [];
+                const groupedSermons = {};
+
+                sermons.forEach(v => {
+                    const author = v.author && v.author.trim() !== '' ? v.author.trim() : 'Otros Predicadores';
+                    if (!groupedSermons[author]) groupedSermons[author] = [];
+                    groupedSermons[author].push(v);
+                });
+
+                const authors = Object.keys(groupedSermons);
+                let sectionsHTML = authors.map(authorName => {
+                    const authorSermons = groupedSermons[authorName];
+                    return `
+                        <div class="mb-12" data-aos="fade-up">
+                            <h3 class="text-2xl font-extrabold text-gray-900 border-b pb-2 mb-6 flex items-center space-x-2">
+                                <i class="fa-solid fa-user-tie text-primary"></i>
+                                <span>Sermones ${authorName}</span>
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                ${renderSermonsHTML(authorSermons)}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                dedicatedContent.innerHTML = `
+                    <div class="text-center mb-8" data-aos="fade-up">
+                        <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Biblioteca Pastoral</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2">Sermones</h2>
+                        <p class="text-gray-500 mt-2">Mensajes organizados por pastor</p>
+                    </div>
+                    ${sectionsHTML}
+                `;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => { if (window.AOS) AOS.refresh(); }, 100);
+            } else {
+                scrollToSection(cleanLink);
+            }
+        };
+
+        window.fetchBibleChapter = () => {
+            const book = document.getElementById('bible-book-select').value;
+            const chapter = document.getElementById('bible-chapter-input').value || 1;
+            const container = document.getElementById('bible-verses-container');
+
+            if (book === 'PSA' && chapter == 23) {
+                container.innerHTML = `
+                    <h3 class="text-xl font-bold text-primary font-sans mb-4">Salmos 23 - Jehová es mi pastor</h3>
+                    <p><sup class="text-xs font-bold text-primary">1</sup> Jehová es mi pastor; nada me faltará.</p>
+                    <p><sup class="text-xs font-bold text-primary">2</sup> En lugares de delicados pastos me hará descansar; Junto a aguas de reposo me pastoreará.</p>
+                    <p><sup class="text-xs font-bold text-primary">3</sup> Confortará mi alma; Me guiará por sendas de justicia por amor de su nombre.</p>
+                    <p><sup class="text-xs font-bold text-primary">4</sup> Aunque ande en valle de sombra de muerte, No temeré mal alguno, porque tú estarás conmigo; Tu vara y tu cayado me infundirán aliento.</p>
+                    <p><sup class="text-xs font-bold text-primary">5</sup> Aderezas mesa delante de mí en presencia de mis angustiadores; Unges mi cabeza con aceite; mi copa está rebosando.</p>
+                    <p><sup class="text-xs font-bold text-primary">6</sup> Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, Y en la casa de Jehová moraré por largos días.</p>
+                `;
+            } else {
+                container.innerHTML = `
+                    <h3 class="text-xl font-bold text-primary font-sans mb-4">Lectura Bíblica (${book} Cap. ${chapter})</h3>
+                    <p><sup class="text-xs font-bold text-primary">1</sup> Porque la palabra de Dios es viva y eficaz, y más cortante que toda espada de dos filos; y penetra hasta partir el alma y el espíritu.</p>
+                    <p><sup class="text-xs font-bold text-primary">2</sup> Toda la Escritura es inspirada por Dios, y útil para enseñar, para redargüir, para corregir, para instruir en justicia.</p>
+                `;
+            }
+        };
+
+        function renderSermonsHTML(videoList) {
+            if (!videoList || videoList.length === 0) return `<p class="text-gray-500">No hay sermones registrados.</p>`;
+            return videoList.map(v => {
+                const hasAudio = v.audioUrl && v.audioUrl.trim() !== '';
+                return `
+                    <div id="sermon-card-${v.id}" class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300" data-aos="fade-up">
+                        <div>
+                            <div class="aspect-video w-full bg-black">
+                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/${parseYtEmbed(v.ytId)}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <div class="p-5">
+                                <span class="text-xs font-bold text-primary uppercase tracking-wider block mb-1">${v.author}</span>
+                                <h4 class="font-bold text-gray-900 text-lg leading-snug">${v.title}</h4>
+                                
+                                ${hasAudio ? `
+                                    <div class="mt-4 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                        <div class="flex items-center justify-between text-xs font-bold text-gray-700 mb-2">
+                                            <span class="flex items-center space-x-1">
+                                                <i class="fa-solid fa-headphones text-primary"></i>
+                                                <span>Escuchar Audio:</span>
+                                            </span>
+                                            <a href="${v.audioUrl}" target="_blank" download class="text-blue-600 hover:text-blue-800 transition flex items-center space-x-1">
+                                                <i class="fa-solid fa-download"></i>
+                                                <span>Bajar Audio</span>
+                                            </a>
+                                        </div>
+                                        <audio controls class="w-full h-9 rounded-lg">
+                                            <source src="${v.audioUrl}" type="audio/mpeg">
+                                            Tu navegador no soporta el reproductor de audio.
+                                        </audio>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="px-5 pb-4 border-t pt-3 flex items-center justify-between">
+                            <span class="text-xs font-bold text-gray-500">Compartir:</span>
+                            <div class="flex items-center space-x-1.5">
+                                <button onclick="shareSermon('${v.id}', 'wa')" title="WhatsApp" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition"><i class="fa-brands fa-whatsapp text-xs"></i></button>
+                                <button onclick="shareSermon('${v.id}', 'fb')" title="Facebook" class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition"><i class="fa-brands fa-facebook-f text-xs"></i></button>
+                                <button onclick="shareSermon('${v.id}', 'copy')" title="Copiar Link" class="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center hover:bg-gray-300 transition"><i class="fa-solid fa-link text-xs"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderBlogsHTML(blogList) {
+            if (!blogList || blogList.length === 0) return `<p class="text-gray-500">No hay publicaciones.</p>`;
+            return blogList.map(b => `
+                <div id="blog-card-${b.id}" class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300" data-aos="fade-up">
+                    <div onclick="openBlogModal('${b.id}')" class="cursor-pointer">
+                        <img src="${b.img}" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <span class="text-xs font-bold text-primary uppercase">${b.author} | ${b.date}</span>
+                            <h3 class="text-xl font-bold text-gray-900 mt-2">${b.title}</h3>
+                            <p class="text-gray-600 text-sm mt-2 line-clamp-3">${b.content}</p>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-4 border-t pt-3 flex items-center justify-between">
+                        <button onclick="openBlogModal('${b.id}')" class="text-xs font-bold text-primary hover:underline">Leer más →</button>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="shareArticle('${b.id}', 'wa')" title="WhatsApp" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition"><i class="fa-brands fa-whatsapp text-[11px]"></i></button>
+                            <button onclick="shareArticle('${b.id}', 'fb')" title="Facebook" class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition"><i class="fa-brands fa-facebook-f text-[11px]"></i></button>
+                            <button onclick="shareArticle('${b.id}', 'copy')" title="Copiar Link" class="w-7 h-7 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center hover:bg-gray-300 transition"><i class="fa-solid fa-link text-[11px]"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openBlogModal = (id) => {
+            const b = (currentData.blogs || []).find(item => item.id === id);
+            if (!b) return;
+            document.getElementById('blog-modal-title').innerText = b.title;
+            document.getElementById('blog-modal-author').innerText = b.author;
+            document.getElementById('blog-modal-date').innerText = b.date;
+            document.getElementById('blog-modal-img').src = b.img;
+            document.getElementById('blog-modal-content').innerText = b.content;
+
+            document.getElementById('blog-modal-share-container').innerHTML = `
+                <button onclick="shareArticle('${b.id}', 'wa')" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition"><i class="fa-brands fa-whatsapp text-xs"></i></button>
+                <button onclick="shareArticle('${b.id}', 'fb')" class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition"><i class="fa-brands fa-facebook-f text-xs"></i></button>
+                <button onclick="shareArticle('${b.id}', 'copy')" class="w-7 h-7 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center hover:bg-gray-300 transition"><i class="fa-solid fa-link text-xs"></i></button>
+            `;
+
+            document.getElementById('blog-modal').classList.remove('hidden');
+        };
+
+        window.closeBlogModal = () => document.getElementById('blog-modal').classList.add('hidden');
+
+        // REPRODUCTOR MULTI-EMISORA
+        window.toggleRadio = (id) => {
+            const otherId = id === '1' ? '2' : '1';
+            const player = document.getElementById(`radio-audio-player-${id}`);
+            const otherPlayer = document.getElementById(`radio-audio-player-${otherId}`);
+            const iframe = document.getElementById(`radio-iframe-${id}`);
+            const icon = document.getElementById(`radio-icon-${id}`);
+            const text = document.getElementById(`radio-text-${id}`);
+            const status = document.getElementById(`radio-status-${id}`);
+            
+            const rawUrl = id === '1' 
+                ? (currentData.config.radioUrl || "https://radiobautista106uno.radiostream123.com/")
+                : (currentData.config.radioUrl2 || "https://radioneumastereo.radio12345.com/");
+
+            if (otherPlayer && !otherPlayer.paused) {
+                otherPlayer.pause();
+                document.getElementById(`radio-icon-${otherId}`).className = "fa-solid fa-play";
+                document.getElementById(`radio-text-${otherId}`).innerText = otherId === '1' ? "Escuchar 106.1 FM" : "Escuchar Neuma Stereo";
+                document.getElementById(`radio-status-${otherId}`).innerText = "Pausado";
+            }
+
+            if (!player.paused) {
+                player.pause();
+                icon.className = "fa-solid fa-play";
+                text.innerText = id === '1' ? "Escuchar 106.1 FM" : "Escuchar Neuma Stereo";
+                status.innerText = "Pausado";
+                return;
+            }
+
+            status.innerText = "Conectando señal...";
+            player.src = rawUrl;
+            player.play().then(() => {
+                icon.className = "fa-solid fa-pause text-red-600";
+                text.innerText = "Pausar Radio";
+                status.innerText = id === '1' ? "Sintonizando 106.1 FM" : "Sintonizando Neuma Stereo";
+            }).catch(() => {
+                iframe.src = rawUrl;
+                icon.className = "fa-solid fa-pause text-red-600";
+                text.innerText = "Detener Radio";
+                status.innerText = "Reproduciendo señal en vivo";
+            });
+        };
+
+        window.handleContactSubmit = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const msg = document.getElementById('contact-msg').value;
+            const receiverEmail = currentData.config.receiverEmail || currentData.config.email || "contacto@taberbypass.org";
+
+            const mailtoUrl = `mailto:${receiverEmail}?subject=${encodeURIComponent(`Contacto Taber by Pass - ${name}`)}&body=${encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${msg}`)}`;
+            window.location.href = mailtoUrl;
+            alert(`¡Gracias ${name}! Se abrirá tu cliente de correo para enviar el mensaje a ${receiverEmail}`);
+        };
+
+        function renderPublicSite() {
+            const data = currentData;
+            
+            const dropdownLinks = ['#plan-salvacion', '#biblia', '#banner-eventos', '#galeria'];
+            
+            const mainNavItems = (data.menuItems || []).filter(item => !dropdownLinks.includes(item.link));
+            const dropdownItems = (data.menuItems || []).filter(item => dropdownLinks.includes(item.link));
+
+            let navHTML = mainNavItems.map(item => `
+                <button onclick="showSingleView('${item.link}')" class="text-gray-700 hover:text-primary hover:bg-blue-50 px-2.5 py-1.5 rounded-lg transition font-semibold whitespace-nowrap">
+                    ${item.title}
+                </button>
+            `).join('');
+
+            navHTML += `
+                <div id="dropdown-otros-container" class="relative inline-block text-left">
+                    <button onclick="toggleDropdownOtros()" class="bg-gray-100 hover:bg-primary hover:text-white text-gray-800 px-3 py-1.5 rounded-lg transition font-bold whitespace-nowrap flex items-center space-x-1.5 shadow-sm border border-gray-200">
+                        <span>Otros</span>
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div id="dropdown-otros-menu" class="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 hidden z-50">
+                        ${dropdownItems.map(subItem => `
+                            <button onclick="showSingleView('${subItem.link}')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-gray-700 hover:bg-blue-50 hover:text-primary transition flex items-center justify-between">
+                                <span>${subItem.title}</span>
+                                <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('dynamic-nav-links').innerHTML = navHTML;
+
+            let mobileNavHTML = (data.menuItems || []).map(item => `
+                <button onclick="showSingleView('${item.link}')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm text-gray-800 hover:bg-primary hover:text-white transition flex items-center justify-between border border-gray-100 bg-gray-50">
+                    <span>${item.title}</span>
+                    <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                </button>
+            `).join('');
+
+            document.getElementById('mobile-nav-links').innerHTML = mobileNavHTML;
+
+            const brandImg = document.getElementById('nav-brand-img');
+            const brandIcon = document.getElementById('nav-brand-icon');
+            if (data.config.logoUrl && data.config.logoUrl.trim() !== "") {
+                brandImg.src = data.config.logoUrl;
+                brandImg.classList.remove('hidden');
+                brandIcon.classList.add('hidden');
+            } else {
+                brandImg.classList.add('hidden');
+                brandIcon.classList.remove('hidden');
+            }
+
+            document.getElementById('nav-brand-title').innerText = data.config.brand || "Taber by Pass";
+            document.getElementById('nav-brand-subtitle').innerText = data.config.subtitle || "Una iglesia de Fe";
+            document.getElementById('hero-title').innerText = data.config.heroTitle || "Un lugar de esperanza y salvación";
+            document.getElementById('hero-subtitle').innerText = data.config.heroSub || "";
+
+            document.getElementById('footer-address').innerHTML = `<i class="fa-solid fa-location-dot text-primary mr-2"></i> ${data.config.address || "Dirección Principal"}`;
+            document.getElementById('footer-phone').innerHTML = `<i class="fa-solid fa-phone text-primary mr-2"></i> ${data.config.phone || "+00 0000-0000"}`;
+            document.getElementById('footer-email').innerHTML = `<i class="fa-solid fa-envelope text-primary mr-2"></i> ${data.config.email || "contacto@taberbypass.org"}`;
+
+            const socialBox = document.getElementById('social-links-container');
+            let socialHTML = '';
+            if (data.config.fb) socialHTML += `<a href="${data.config.fb}" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition"><i class="fa-brands fa-facebook-f"></i></a>`;
+            if (data.config.yt) socialHTML += `<a href="${data.config.yt}" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition"><i class="fa-brands fa-youtube"></i></a>`;
+            if (data.config.ig) socialHTML += `<a href="${data.config.ig}" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition"><i class="fa-brands fa-instagram"></i></a>`;
+            if (data.config.tk) socialHTML += `<a href="${data.config.tk}" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition"><i class="fa-brands fa-tiktok"></i></a>`;
+            if (data.config.wa) socialHTML += `<a href="https://wa.me/${data.config.wa}" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition"><i class="fa-brands fa-whatsapp"></i></a>`;
+            socialBox.innerHTML = socialHTML;
+
+            loadHlsStream(data.config.liveTv);
+
+            document.getElementById('videos-grid').innerHTML = renderSermonsHTML((data.videos || []).slice(0, 4));
+            if ((data.videos || []).length > 4) document.getElementById('videos-more-container').classList.remove('hidden');
+
+            document.getElementById('blog-grid').innerHTML = renderBlogsHTML((data.blogs || []).slice(0, 4));
+
+            document.getElementById('albums-grid').innerHTML = (data.albums || []).map(album => `
+                <div onclick="openAlbumModal('${album.id}')" class="bg-white rounded-2xl shadow border overflow-hidden cursor-pointer hover:shadow-lg transition duration-300" data-aos="fade-up">
+                    <img src="${album.cover}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900">${album.title}</h4>
+                        <p class="text-gray-500 text-xs mt-1">${album.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('horarios-grid').innerHTML = (data.schedules || []).map(s => `
+                <div class="bg-white p-6 rounded-2xl shadow border text-center hover:shadow-md transition duration-300" data-aos="fade-up">
+                    <h4 class="font-bold text-lg text-gray-900">${s.day}</h4>
+                    <p class="text-primary font-bold text-xl my-1">${s.time}</p>
+                    <p class="text-gray-500 text-sm">${s.desc}</p>
+                </div>
+            `).join('');
+
+            setTimeout(() => { if (window.AOS) AOS.refresh(); }, 200);
+        }
+
+        window.openAlbumModal = (id) => {
+            const album = (currentData.albums || []).find(a => a.id === id);
+            if (!album) return;
+            document.getElementById('modal-album-title').innerText = album.title;
+            document.getElementById('modal-album-desc').innerText = album.desc;
+            document.getElementById('modal-album-photos').innerHTML = (album.photos || []).map(url => `
+                <img src="${url}" class="rounded-xl w-full h-40 object-cover border shadow">
+            `).join('');
+            document.getElementById('album-view-modal').classList.remove('hidden');
+        };
+
+        window.closeAlbumModal = () => document.getElementById('album-view-modal').classList.add('hidden');
+
+        function renderAdminLists() {
+            const data = currentData;
+            document.getElementById('cfg-brand').value = data.config.brand || "";
+            document.getElementById('cfg-subtitle').value = data.config.subtitle || "";
+            document.getElementById('cfg-logo').value = data.config.logoUrl || "";
+            document.getElementById('cfg-phone').value = data.config.phone || "";
+            document.getElementById('cfg-email').value = data.config.email || "";
+            document.getElementById('cfg-receiver-email').value = data.config.receiverEmail || "";
+            document.getElementById('cfg-address').value = data.config.address || "";
+            document.getElementById('cfg-livetv').value = data.config.liveTv || "";
+            document.getElementById('cfg-radio').value = data.config.radioUrl || "";
+            document.getElementById('cfg-radio2').value = data.config.radioUrl2 || "";
+            document.getElementById('cfg-fb').value = data.config.fb || "";
+            document.getElementById('cfg-yt').value = data.config.yt || "";
+            document.getElementById('cfg-ig').value = data.config.ig || "";
+            document.getElementById('cfg-tk').value = data.config.tk || "";
+            document.getElementById('cfg-wa').value = data.config.wa || "";
+
+            document.getElementById('teo-cover-url').value = data.teologiaCover || "";
+            document.getElementById('teo-gallery-urls').value = (data.teologiaGallery || []).join('\n');
+
+            document.getElementById('admin-banners-list').innerHTML = (data.banners || []).map(b => `
+                <div class="bg-gray-50 p-4 rounded-xl border flex items-center justify-between">
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <img src="${b.img}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
+                        <div class="truncate">
+                            <h5 class="font-bold text-sm text-gray-900 truncate">${b.title}</h5>
+                            <p class="text-xs text-gray-500 truncate">${b.subtitle || ''}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <button onclick="editBanner('${b.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteItem('banners', '${b.id}')" class="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('admin-teologia-list').innerHTML = (data.teologiaCycles || []).map(c => `
+                <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        ${c.img ? `<img src="${c.img}" class="w-10 h-10 rounded-lg object-cover">` : ''}
+                        <div>
+                            <span class="font-bold text-sm text-gray-900">${c.cycleName}</span>
+                            <span class="text-xs text-gray-500 ml-2">(${c.schedule})</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editTeologiaCycle('${c.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteItem('teologiaCycles', '${c.id}')" class="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('admin-menu-list').innerHTML = (data.menuItems || []).map(m => `
+                <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
+                    <div>
+                        <span class="font-bold text-sm text-gray-900">${m.title}</span>
+                        <span class="text-xs text-gray-500 ml-2">(${m.link})</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editMenuItem('${m.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteItem('menuItems', '${m.id}')" class="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('admin-blog-list').innerHTML = (data.blogs || []).map(b => `
+                <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <img src="${b.img}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0">
+                        <div class="truncate">
+                            <h5 class="font-bold text-sm text-gray-900 truncate">${b.title}</h5>
+                            <span class="text-xs text-gray-500">${b.author} - ${b.date}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <button onclick="editBlog('${b.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteItem('blogs', '${b.id}')" class="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('admin-videos-list').innerHTML = (data.videos || []).map(v => `
+                <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
+                    <div>
+                        <h5 class="font-bold text-sm text-gray-900">${v.title}</h5>
+                        <span class="text-xs text-primary font-semibold">${v.author}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editVideo('${v.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteItem('videos', '${v.id}')" class="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('admin-albums-list').innerHTML = (data.albums || []).map(a => `
+                <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <img src="${a.cover}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
+                        <div class="truncate">
+                            <h5 class="font-bold text-sm text-gray-900 truncate">${a.title}</h5>
+                            <span class="text-xs text-gray-500">${(a.photos || []).length} fotos</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <button onclick="editAlbum('${a.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteItem('albums', '${a.id}')" class="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('admin-schedules-list').innerHTML = (data.schedules || []).map(s => `
+                <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
+                    <div>
+                        <span class="font-bold text-sm text-gray-900">${s.day}</span>
+                        <span class="text-xs text-primary font-bold ml-2">${s.time}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editSchedule('${s.id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteItem('schedules', '${s.id}')" class="bg-red-100 text-red-700 p-2 rounded-lg hover:bg-red-200"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.deleteItem = (category, id) => {
+            if (confirm('¿Estás seguro de borrar este registro?')) {
+                currentData[category] = (currentData[category] || []).filter(item => item.id !== id);
+                saveData(currentData);
+            }
+        };
+
+        window.saveTeologiaGeneral = (e) => {
+            e.preventDefault();
+            currentData.teologiaCover = document.getElementById('teo-cover-url').value;
+            currentData.teologiaGallery = document.getElementById('teo-gallery-urls').value.split('\n').filter(g => g.trim() !== '');
+            saveData(currentData);
+            alert('¡Portada y galería de Teología actualizadas correctamente!');
+        };
+
+        window.editBanner = (id) => {
+            const b = (currentData.banners || []).find(item => item.id === id);
+            if (!b) return;
+            document.getElementById('banner-edit-id').value = b.id;
+            document.getElementById('banner-title').value = b.title;
+            document.getElementById('banner-subtitle').value = b.subtitle || '';
+            document.getElementById('banner-img').value = b.img;
+            document.getElementById('banner-details').value = b.details || '';
+            document.getElementById('banner-photos').value = (b.photos || []).join('\n');
+            document.getElementById('banner-btn-submit').innerText = "Actualizar Banner";
+            document.getElementById('banner-btn-cancel').classList.remove('hidden');
+        };
+
+        window.cancelBannerEdit = () => {
+            document.getElementById('banner-edit-id').value = '';
+            document.getElementById('banner-title').value = '';
+            document.getElementById('banner-subtitle').value = '';
+            document.getElementById('banner-img').value = '';
+            document.getElementById('banner-details').value = '';
+            document.getElementById('banner-photos').value = '';
+            document.getElementById('banner-btn-submit').innerText = "Guardar Banner";
+            document.getElementById('banner-btn-cancel').classList.add('hidden');
+        };
+
+        window.editTeologiaCycle = (id) => {
+            const c = (currentData.teologiaCycles || []).find(item => item.id === id);
+            if (!c) return;
+            document.getElementById('teo-edit-id').value = c.id;
+            document.getElementById('teo-cycle-name').value = c.cycleName;
+            document.getElementById('teo-schedule').value = c.schedule;
+            document.getElementById('teo-img').value = c.img || '';
+            document.getElementById('teo-subjects').value = (c.subjects || []).join('\n');
+            document.getElementById('teo-btn-submit').innerText = "Actualizar Ciclo";
+            document.getElementById('teo-btn-cancel').classList.remove('hidden');
+        };
+
+        window.cancelTeologiaEdit = () => {
+            document.getElementById('teo-edit-id').value = '';
+            document.getElementById('teo-cycle-name').value = '';
+            document.getElementById('teo-schedule').value = '';
+            document.getElementById('teo-img').value = '';
+            document.getElementById('teo-subjects').value = '';
+            document.getElementById('teo-btn-submit').innerText = "Guardar Ciclo Teológico";
+            document.getElementById('teo-btn-cancel').classList.add('hidden');
+        };
+
+        window.editMenuItem = (id) => {
+            const m = (currentData.menuItems || []).find(item => item.id === id);
+            if (!m) return;
+            document.getElementById('menu-edit-id').value = m.id;
+            document.getElementById('menu-title').value = m.title;
+            document.getElementById('menu-link').value = m.link;
+            document.getElementById('menu-btn-submit').innerText = "Actualizar Enlace";
+            document.getElementById('menu-btn-cancel').classList.remove('hidden');
+        };
+
+        window.cancelMenuEdit = () => {
+            document.getElementById('menu-edit-id').value = '';
+            document.getElementById('menu-title').value = '';
+            document.getElementById('menu-link').value = '';
+            document.getElementById('menu-btn-submit').innerText = "Guardar Enlace";
+            document.getElementById('menu-btn-cancel').classList.add('hidden');
+        };
+
+        window.editBlog = (id) => {
+            const b = (currentData.blogs || []).find(item => item.id === id);
+            if (!b) return;
+            document.getElementById('blog-edit-id').value = b.id;
+            document.getElementById('blog-title').value = b.title;
+            document.getElementById('blog-author').value = b.author;
+            document.getElementById('blog-date').value = b.date;
+            document.getElementById('blog-img').value = b.img;
+            document.getElementById('blog-content').value = b.content;
+            document.getElementById('blog-btn-submit').innerText = "Actualizar Artículo";
+            document.getElementById('blog-btn-cancel').classList.remove('hidden');
+        };
+
+        window.cancelBlogEdit = () => {
+            document.getElementById('blog-edit-id').value = '';
+            document.getElementById('blog-title').value = '';
+            document.getElementById('blog-author').value = '';
+            document.getElementById('blog-date').value = '';
+            document.getElementById('blog-img').value = '';
+            document.getElementById('blog-content').value = '';
+            document.getElementById('blog-btn-submit').innerText = "Publicar Artículo";
+            document.getElementById('blog-btn-cancel').classList.add('hidden');
+        };
+
+        window.editVideo = (id) => {
+            const v = (currentData.videos || []).find(item => item.id === id);
+            if (!v) return;
+            document.getElementById('vid-edit-id').value = v.id;
+            document.getElementById('vid-title').value = v.title;
+            document.getElementById('vid-author').value = v.author;
+            document.getElementById('vid-url').value = v.ytId;
+            document.getElementById('vid-audio-url').value = v.audioUrl || '';
+            document.getElementById('vid-btn-submit').innerText = "Actualizar Sermón";
+            document.getElementById('vid-btn-cancel').classList.remove('hidden');
+        };
+
+        window.cancelVidEdit = () => {
+            document.getElementById('vid-edit-id').value = '';
+            document.getElementById('vid-title').value = '';
+            document.getElementById('vid-author').value = '';
+            document.getElementById('vid-url').value = '';
+            document.getElementById('vid-audio-url').value = '';
+            document.getElementById('vid-btn-submit').innerText = "Guardar Sermón";
+            document.getElementById('vid-btn-cancel').classList.add('hidden');
+        };
+
+        window.editAlbum = (id) => {
+            const a = (currentData.albums || []).find(item => item.id === id);
+            if (!a) return;
+            document.getElementById('album-edit-id').value = a.id;
+            document.getElementById('album-title').value = a.title;
+            document.getElementById('album-cover').value = a.cover;
+            document.getElementById('album-desc').value = a.desc;
+            document.getElementById('album-photos').value = (a.photos || []).join('\n');
+            document.getElementById('album-btn-submit').innerText = "Actualizar Álbum";
+            document.getElementById('album-btn-cancel').classList.remove('hidden');
+        };
+
+        window.cancelAlbumEdit = () => {
+            document.getElementById('album-edit-id').value = '';
+            document.getElementById('album-title').value = '';
+            document.getElementById('album-cover').value = '';
+            document.getElementById('album-desc').value = '';
+            document.getElementById('album-photos').value = '';
+            document.getElementById('album-btn-submit').innerText = "Guardar Álbum";
+            document.getElementById('album-btn-cancel').classList.add('hidden');
+        };
+
+        window.editSchedule = (id) => {
+            const s = (currentData.schedules || []).find(item => item.id === id);
+            if (!s) return;
+            document.getElementById('sch-edit-id').value = s.id;
+            document.getElementById('sch-day').value = s.day;
+            document.getElementById('sch-time').value = s.time;
+            document.getElementById('sch-desc').value = s.desc;
+            document.getElementById('sch-btn-submit').innerText = "Actualizar Horario";
+            document.getElementById('sch-btn-cancel').classList.remove('hidden');
+        };
+
+        window.cancelSchEdit = () => {
+            document.getElementById('sch-edit-id').value = '';
+            document.getElementById('sch-day').value = '';
+            document.getElementById('sch-time').value = '';
+            document.getElementById('sch-desc').value = '';
+            document.getElementById('sch-btn-submit').innerText = "Guardar Horario";
+            document.getElementById('sch-btn-cancel').classList.add('hidden');
+        };
+
+        window.openLoginModal = () => document.getElementById('login-modal').classList.remove('hidden');
+        window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
+
+        window.handleLogin = (e) => {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            if (user === 'admin' && pass === 'Taber2026%') {
+                closeLoginModal();
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdminLists();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        };
+
+        window.closeAdminPanel = () => document.getElementById('admin-panel').classList.add('hidden');
+
+        window.switchTab = (tabName) => {
+            ['stats', 'general', 'banners', 'teologia', 'menu', 'blog', 'videos', 'galeria', 'horarios'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).classList.remove('text-primary', 'border-b-2', 'border-primary');
+            });
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabName}`).classList.add('text-primary', 'border-b-2', 'border-primary');
+        };
+
+        window.saveGeneralConfig = (e) => {
+            e.preventDefault();
+            currentData.config.brand = document.getElementById('cfg-brand').value;
+            currentData.config.subtitle = document.getElementById('cfg-subtitle').value;
+            currentData.config.logoUrl = document.getElementById('cfg-logo').value;
+            currentData.config.phone = document.getElementById('cfg-phone').value;
+            currentData.config.email = document.getElementById('cfg-email').value;
+            currentData.config.receiverEmail = document.getElementById('cfg-receiver-email').value;
+            currentData.config.address = document.getElementById('cfg-address').value;
+            currentData.config.liveTv = document.getElementById('cfg-livetv').value;
+            currentData.config.radioUrl = document.getElementById('cfg-radio').value;
+            currentData.config.radioUrl2 = document.getElementById('cfg-radio2').value;
+            currentData.config.fb = document.getElementById('cfg-fb').value;
+            currentData.config.yt = document.getElementById('cfg-yt').value;
+            currentData.config.ig = document.getElementById('cfg-ig').value;
+            currentData.config.tk = document.getElementById('cfg-tk').value;
+            currentData.config.wa = document.getElementById('cfg-wa').value;
+
+            saveData(currentData);
+            alert('¡Configuración general e información actualizada!');
+        };
+
+        window.saveBanner = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('banner-edit-id').value;
+            const bannerData = {
+                id: editId || Date.now().toString(),
+                title: document.getElementById('banner-title').value,
+                subtitle: document.getElementById('banner-subtitle').value,
+                img: document.getElementById('banner-img').value,
+                details: document.getElementById('banner-details').value,
+                photos: document.getElementById('banner-photos').value.split('\n').filter(p => p.trim() !== '')
+            };
+
+            if (!currentData.banners) currentData.banners = [];
+            if (editId) {
+                const idx = currentData.banners.findIndex(b => b.id === editId);
+                if (idx !== -1) currentData.banners[idx] = bannerData;
+            } else {
+                currentData.banners.unshift(bannerData);
+            }
+            saveData(currentData);
+            cancelBannerEdit();
+            alert('Banner/Anuncio guardado correctamente!');
+        };
+
+        window.saveTeologiaCycle = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('teo-edit-id').value;
+            const cycleData = {
+                id: editId || Date.now().toString(),
+                cycleName: document.getElementById('teo-cycle-name').value,
+                schedule: document.getElementById('teo-schedule').value,
+                img: document.getElementById('teo-img').value,
+                subjects: document.getElementById('teo-subjects').value.split('\n').filter(s => s.trim() !== '')
+            };
+
+            if (!currentData.teologiaCycles) currentData.teologiaCycles = [];
+            if (editId) {
+                const idx = currentData.teologiaCycles.findIndex(c => c.id === editId);
+                if (idx !== -1) currentData.teologiaCycles[idx] = cycleData;
+            } else {
+                currentData.teologiaCycles.push(cycleData);
+            }
+            saveData(currentData);
+            cancelTeologiaEdit();
+            alert('Ciclo del Colegio de Teología guardado!');
+        };
+
+        window.saveMenuItem = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('menu-edit-id').value;
+            const menuData = {
+                id: editId || Date.now().toString(),
+                title: document.getElementById('menu-title').value,
+                link: document.getElementById('menu-link').value
+            };
+
+            if (!currentData.menuItems) currentData.menuItems = [];
+            if (editId) {
+                const idx = currentData.menuItems.findIndex(m => m.id === editId);
+                if (idx !== -1) currentData.menuItems[idx] = menuData;
+            } else {
+                currentData.menuItems.push(menuData);
+            }
+            saveData(currentData);
+            cancelMenuEdit();
+            alert('Enlace del menú guardado!');
+        };
+
+        window.saveBlog = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('blog-edit-id').value;
+            const blogData = {
+                id: editId || Date.now().toString(),
+                title: document.getElementById('blog-title').value,
+                author: document.getElementById('blog-author').value,
+                date: document.getElementById('blog-date').value,
+                img: document.getElementById('blog-img').value,
+                content: document.getElementById('blog-content').value
+            };
+
+            if (!currentData.blogs) currentData.blogs = [];
+            if (editId) {
+                const idx = currentData.blogs.findIndex(b => b.id === editId);
+                if (idx !== -1) currentData.blogs[idx] = blogData;
+            } else {
+                currentData.blogs.unshift(blogData);
+            }
+            saveData(currentData);
+            cancelBlogEdit();
+            alert('Artículo guardado correctamente!');
+        };
+
+        window.saveVideo = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('vid-edit-id').value;
+            const vidData = {
+                id: editId || Date.now().toString(),
+                title: document.getElementById('vid-title').value,
+                author: document.getElementById('vid-author').value,
+                ytId: document.getElementById('vid-url').value,
+                audioUrl: document.getElementById('vid-audio-url').value
+            };
+
+            if (!currentData.videos) currentData.videos = [];
+            if (editId) {
+                const idx = currentData.videos.findIndex(v => v.id === editId);
+                if (idx !== -1) currentData.videos[idx] = vidData;
+            } else {
+                currentData.videos.push(vidData);
+            }
+            saveData(currentData);
+            cancelVidEdit();
+            alert('Sermón guardado correctamente!');
+        };
+
+        window.saveAlbum = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('album-edit-id').value;
+            const albumData = {
+                id: editId || Date.now().toString(),
+                title: document.getElementById('album-title').value,
+                cover: document.getElementById('album-cover').value,
+                desc: document.getElementById('album-desc').value,
+                photos: document.getElementById('album-photos').value.split('\n').filter(p => p.trim() !== '')
+            };
+
+            if (!currentData.albums) currentData.albums = [];
+            if (editId) {
+                const idx = currentData.albums.findIndex(a => a.id === editId);
+                if (idx !== -1) currentData.albums[idx] = albumData;
+            } else {
+                currentData.albums.push(albumData);
+            }
+            saveData(currentData);
+            cancelAlbumEdit();
+            alert('Álbum guardado correctamente!');
+        };
+
+        window.saveSchedule = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('sch-edit-id').value;
+            const schData = {
+                id: editId || Date.now().toString(),
+                day: document.getElementById('sch-day').value,
+                time: document.getElementById('sch-time').value,
+                desc: document.getElementById('sch-desc').value
+            };
+
+            if (!currentData.schedules) currentData.schedules = [];
+            if (editId) {
+                const idx = currentData.schedules.findIndex(s => s.id === editId);
+                if (idx !== -1) currentData.schedules[idx] = schData;
+            } else {
+                currentData.schedules.push(schData);
+            }
+            saveData(currentData);
+            cancelSchEdit();
+            alert('Horario guardado correctamente!');
+        };
+    </script>
+</body>
+</html>
