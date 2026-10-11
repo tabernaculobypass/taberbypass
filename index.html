@@ -385,17 +385,18 @@
         </div>
     </div>
 
-    <!-- MODAL ÁLBUM -->
+    <!-- MODAL ÁLBUM DE FOTOS CORREGIDO -->
     <div id="album-view-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
-            <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+            <div class="p-6 border-b flex justify-between items-center bg-gray-50 flex-shrink-0">
                 <div>
                     <h3 id="modal-album-title" class="text-2xl font-bold text-gray-900">Título del Álbum</h3>
                     <p id="modal-album-desc" class="text-sm text-gray-600 mt-1">Descripción</p>
                 </div>
                 <button onclick="closeAlbumModal()" class="text-gray-400 hover:text-gray-700 p-2 text-2xl transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="modal-album-photos" class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+            <!-- SE APLICÓ UN GRID MÁS LIMPIO Y RESPONSIVO -->
+            <div id="modal-album-photos" class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 auto-rows-fr"></div>
         </div>
     </div>
 
@@ -608,7 +609,7 @@
                         <textarea id="banner-details" rows="3" placeholder="Escribe toda la información del evento o anuncio..." class="w-full border rounded-lg px-3 py-2 bg-white text-sm"></textarea>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Galería de Fotos para el Anuncio (Una URL por línea)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Galería de Fotos para el Anuncio (Una URL por línea o separadas por coma)</label>
                         <textarea id="banner-photos" rows="3" placeholder="https://imagen1.jpg&#10;https://imagen2.jpg" class="w-full border rounded-lg px-3 py-2 bg-white text-xs font-mono"></textarea>
                     </div>
                     <div class="md:col-span-2 flex space-x-2">
@@ -775,8 +776,8 @@
                         <input type="text" id="album-desc" required class="w-full border rounded-lg px-3 py-2 bg-white">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">URLs de Fotos (Una por línea)</label>
-                        <textarea id="album-photos" rows="3" required class="w-full border rounded-lg px-3 py-2 bg-white text-xs font-mono"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URLs de Fotos (Una por línea o separadas por comas)</label>
+                        <textarea id="album-photos" rows="4" required placeholder="https://imagen1.jpg&#10;https://imagen2.jpg" class="w-full border rounded-lg px-3 py-2 bg-white text-xs font-mono"></textarea>
                     </div>
                     <div class="md:col-span-2 flex space-x-2">
                         <button type="submit" id="album-btn-submit" class="bg-primary text-white font-semibold px-6 py-2.5 rounded-lg transition shadow flex-1">Guardar Álbum</button>
@@ -819,7 +820,7 @@
     <!-- AOS JS CDN -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE Y AMPLIACIÓN DE IMÁGENES -->
+    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON PARSEO LIMPIO DE IMÁGENES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -846,6 +847,24 @@
         let currentBannerIndex = 0;
         let initialUrlChecked = false;
 
+        // FUNCIÓN AUXILIAR PARA PARSEAR Y LIMPIAR LISTAS DE URLS DE FOTOS
+        function parsePhotoUrls(input) {
+            if (!input) return [];
+            if (Array.isArray(input)) {
+                return input
+                    .flatMap(item => typeof item === 'string' ? item.split(/[\n,]+/) : [])
+                    .map(url => url.trim())
+                    .filter(url => url.length > 5 && url.startsWith('http'));
+            }
+            if (typeof input === 'string') {
+                return input
+                    .split(/[\n,]+/)
+                    .map(url => url.trim())
+                    .filter(url => url.length > 5 && url.startsWith('http'));
+            }
+            return [];
+        }
+
         // FUNCIONES DE LIGHTBOX / VER FOTO AMPLIADA EN PANTALLA COMPLETA
         window.openImageLightbox = (imgUrl) => {
             if (!imgUrl) return;
@@ -858,7 +877,6 @@
             document.getElementById('lightbox-full-img').src = '';
         };
 
-        // INCREMENTAR CONTADOR DE VISITAS AL ENTRAR A LA PÁGINA
         function incrementVisitCounter() {
             if (!sessionStorage.getItem('visited_session')) {
                 sessionStorage.setItem('visited_session', 'true');
@@ -869,7 +887,6 @@
         }
         incrementVisitCounter();
 
-        // OBTENER VISITAS EN TIEMPO REAL
         onValue(visitsRef, (snapshot) => {
             const count = snapshot.val() || 0;
             const el = document.getElementById('admin-visit-count');
@@ -999,31 +1016,27 @@
                 fb: "https://facebook.com", yt: "https://youtube.com", ig: "https://instagram.com", wa: "", tk: ""
             },
             banners: [
-                { id: "1", title: "Congreso de Jóvenes 2026", subtitle: "Próximo Sábado - 4:00 PM", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1200", details: "Únete a nuestro gran congreso juvenil donde compartiremos alabanza, dinámicas, palabra de Dios y convivencia especial.", photos: ["https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200"] }
+                { id: "1", title: "Congreso de Jóvenes 2026", subtitle: "Próximo Sábado - 4:00 PM", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1200", details: "Únete a nuestro gran congreso juvenil.", photos: ["https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200"] }
             ],
             menuItems: mandatoryMenuItems,
             teologiaCover: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200",
             teologiaGallery: [
-                "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800|Graduación Promoción de Teología",
-                "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=800|Clases Teológicas Presenciales",
-                "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800|Estudio Bíblico Profundo"
+                "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800|Graduación Promoción de Teología"
             ],
             teologiaCycles: [
-                { id: "1", cycleName: "Ciclo I - Fundamentos Teológicos", schedule: "Sábados de 8:00 AM a 12:00 PM", img: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1080", subjects: ["Bibliología y Hermenéutica", "Teología Sistemática I", "Evangelismo Personal"] },
-                { id: "2", cycleName: "Ciclo II - Historia y Epístolas", schedule: "Domingos de 2:00 PM a 5:00 PM", img: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1080", subjects: ["Epístolas Paulinas", "Historia de la Iglesia", "Homilética y Predicación"] }
+                { id: "1", cycleName: "Ciclo I - Fundamentos Teológicos", schedule: "Sábados de 8:00 AM a 12:00 PM", img: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1080", subjects: ["Bibliología y Hermenéutica", "Teología Sistemática I", "Evangelismo Personal"] }
             ],
             blogs: [
                 { id: "1", title: "Perseverando en la prueba", author: "Pastor Roger", date: "1 Oct, 2026", img: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200", content: "La palabra de Dios nos recuerda en Santiago 1:12..." }
             ],
             videos: [
-                { id: "1", title: "El Poder de la Oración", author: "Pastor Roger", ytId: "dQw4w9WgXcQ", audioUrl: "https://jumpshare.com/v/sample.mp3", timestamp: 1711900000000 }
+                { id: "1", title: "El Poder de la Oración", author: "Pastor Roger", ytId: "dQw4w9WgXcQ", audioUrl: "", timestamp: 1711900000000 }
             ],
             albums: [
-                { id: "1", title: "Culto Especial de Aniversario", desc: "Momentos inolvidables", cover: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800", photos: ["https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800"] }
+                { id: "1", title: "Domingo en Casa", desc: "¡Gracias por acompañarnos este día!", cover: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800", photos: ["https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800"] }
             ],
             schedules: [
-                { id: "1", day: "Domingo de Adoración", time: "9:00 AM", desc: "Culto General" },
-                { id: "2", day: "Miércoles Bíblico", time: "7:00 PM", desc: "Estudio de la Palabra" }
+                { id: "1", day: "Domingo de Adoración", time: "9:00 AM", desc: "Culto General" }
             ]
         };
 
@@ -1169,7 +1182,8 @@
             badge.innerText = "Detalles del Anuncio";
             backBar.classList.remove('hidden');
 
-            const photosList = b.photos && b.photos.length > 0 ? b.photos : [b.img];
+            const photosList = parsePhotoUrls(b.photos);
+            const finalPhotos = photosList.length > 0 ? photosList : [b.img];
 
             dedicatedContent.innerHTML = `
                 <div class="max-w-4xl mx-auto space-y-8" data-aos="fade-up">
@@ -1194,9 +1208,9 @@
                             <span class="text-xs text-gray-500 font-normal">Toca cualquier imagen para ampliarla</span>
                         </h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            ${photosList.map(pUrl => `
-                                <div onclick="openImageLightbox('${pUrl}')" class="group relative overflow-hidden rounded-2xl shadow cursor-pointer bg-gray-100">
-                                    <img src="${pUrl}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                            ${finalPhotos.map(pUrl => `
+                                <div onclick="openImageLightbox('${pUrl}')" class="group relative overflow-hidden rounded-2xl shadow cursor-pointer bg-gray-100 h-48 w-full">
+                                    <img src="${pUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                     <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold text-sm">
                                         <i class="fa-solid fa-magnifying-glass-plus text-xl"></i>
                                     </div>
@@ -1448,8 +1462,6 @@
 
                 dedicatedContent.innerHTML = `
                     <div class="max-w-5xl mx-auto space-y-12" data-aos="fade-up">
-                        
-                        <!-- PORTADA DESTACADA -->
                         <div class="relative rounded-3xl overflow-hidden shadow-2xl min-h-[280px] sm:min-h-[380px] flex items-center justify-center text-center text-white p-6 cursor-pointer" onclick="openImageLightbox('${coverImg}')" style="background-image: url('${coverImg}'); background-size: cover; background-position: center;">
                             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-slate-950/30"></div>
                             <div class="relative z-10 space-y-3 max-w-3xl">
@@ -1463,7 +1475,6 @@
                             </div>
                         </div>
 
-                        <!-- VISIÓN Y DETALLES -->
                         <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-200 space-y-6" data-aos="fade-up">
                             <div class="text-center max-w-3xl mx-auto space-y-2">
                                 <span class="text-primary text-xs font-bold uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Visión Académica y Espiritual</span>
@@ -1500,10 +1511,8 @@
                             </div>
                         </div>
 
-                        <!-- GALERÍA -->
                         ${galleryHTML}
 
-                        <!-- CICLOS -->
                         <div class="space-y-6">
                             <h3 class="text-2xl font-bold text-gray-900 border-b pb-2 flex items-center space-x-2">
                                 <i class="fa-solid fa-list-check text-primary"></i>
@@ -1512,7 +1521,6 @@
                             ${cyclesHTML || '<p class="text-center text-gray-500 py-8">No hay ciclos o materias registradas actualmente.</p>'}
                         </div>
 
-                        <!-- ATENCIÓN -->
                         <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-gray-950 p-8 sm:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-amber-400" data-aos="zoom-in">
                             <div class="space-y-2 text-center md:text-left">
                                 <div class="inline-flex items-center space-x-2 bg-gray-950/10 text-gray-950 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
@@ -1588,7 +1596,6 @@
                 badge.innerText = "Sermones";
                 backBar.classList.remove('hidden');
 
-                // OBTENER SERMONES Y ORDENARLOS DESDE EL MÁS RECIENTE
                 const sermons = getSortedSermons();
                 const newestSermonId = sermons.length > 0 ? sermons[0].id : null;
                 const groupedSermons = {};
@@ -1654,7 +1661,6 @@
             }
         };
 
-        // OBTIENE Y ORDENA LOS SERMONES (EL MÁS RECIENTE PRIMERO)
         function getSortedSermons() {
             const sermons = currentData.videos ? [...currentData.videos] : [];
             return sermons.sort((a, b) => {
@@ -1766,7 +1772,6 @@
 
         window.closeBlogModal = () => document.getElementById('blog-modal').classList.add('hidden');
 
-        // REPRODUCTOR MULTI-EMISORA
         window.toggleRadio = (id) => {
             const otherId = id === '1' ? '2' : '1';
             const player = document.getElementById(`radio-audio-player-${id}`);
@@ -1894,7 +1899,6 @@
 
             loadHlsStream(data.config.liveTv);
 
-            // RENDERIZAR SERMONES ORDENADOS
             const sortedSermons = getSortedSermons();
             const newestSermonId = sortedSermons.length > 0 ? sortedSermons[0].id : null;
 
@@ -1924,19 +1928,35 @@
             setTimeout(() => { if (window.AOS) AOS.refresh(); }, 200);
         }
 
+        // RENDERIZADO DEL ÁLBUM CORREGIDO Y CON PARSEO DE URLS
         window.openAlbumModal = (id) => {
             const album = (currentData.albums || []).find(a => a.id === id);
             if (!album) return;
+
             document.getElementById('modal-album-title').innerText = album.title;
             document.getElementById('modal-album-desc').innerText = album.desc;
-            document.getElementById('modal-album-photos').innerHTML = (album.photos || []).map(url => `
-                <div onclick="openImageLightbox('${url}')" class="group relative overflow-hidden rounded-xl cursor-pointer border shadow bg-gray-100">
-                    <img src="${url}" class="w-full h-40 object-cover group-hover:scale-105 transition duration-300">
-                    <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold text-xs">
-                        <i class="fa-solid fa-magnifying-glass-plus text-lg"></i>
+
+            // Extraer y limpiar URLs de las fotos
+            const photosList = parsePhotoUrls(album.photos);
+
+            if (photosList.length === 0) {
+                document.getElementById('modal-album-photos').innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500 font-semibold">
+                        <i class="fa-solid fa-images text-3xl mb-2 block text-gray-400"></i>
+                        No hay fotografías válidas en este álbum.
                     </div>
-                </div>
-            `).join('');
+                `;
+            } else {
+                document.getElementById('modal-album-photos').innerHTML = photosList.map(url => `
+                    <div onclick="openImageLightbox('${url}')" class="group relative overflow-hidden rounded-2xl cursor-pointer border shadow bg-gray-100 h-48 w-full flex items-center justify-center">
+                        <img src="${url}" onerror="this.onerror=null; this.parentElement.style.display='none';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold text-xs">
+                            <i class="fa-solid fa-magnifying-glass-plus text-xl"></i>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
             document.getElementById('album-view-modal').classList.remove('hidden');
         };
 
@@ -2043,7 +2063,7 @@
                         <img src="${a.cover}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                         <div class="truncate">
                             <h5 class="font-bold text-sm text-gray-900 truncate">${a.title}</h5>
-                            <span class="text-xs text-gray-500">${(a.photos || []).length} fotos</span>
+                            <span class="text-xs text-gray-500">${parsePhotoUrls(a.photos).length} fotos</span>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2 flex-shrink-0">
@@ -2090,7 +2110,7 @@
             document.getElementById('banner-subtitle').value = b.subtitle || '';
             document.getElementById('banner-img').value = b.img;
             document.getElementById('banner-details').value = b.details || '';
-            document.getElementById('banner-photos').value = (b.photos || []).join('\n');
+            document.getElementById('banner-photos').value = parsePhotoUrls(b.photos).join('\n');
             document.getElementById('banner-btn-submit').innerText = "Actualizar Banner";
             document.getElementById('banner-btn-cancel').classList.remove('hidden');
         };
@@ -2199,7 +2219,7 @@
             document.getElementById('album-title').value = a.title;
             document.getElementById('album-cover').value = a.cover;
             document.getElementById('album-desc').value = a.desc;
-            document.getElementById('album-photos').value = (a.photos || []).join('\n');
+            document.getElementById('album-photos').value = parsePhotoUrls(a.photos).join('\n');
             document.getElementById('album-btn-submit').innerText = "Actualizar Álbum";
             document.getElementById('album-btn-cancel').classList.remove('hidden');
         };
@@ -2292,7 +2312,7 @@
                 subtitle: document.getElementById('banner-subtitle').value,
                 img: document.getElementById('banner-img').value,
                 details: document.getElementById('banner-details').value,
-                photos: document.getElementById('banner-photos').value.split('\n').filter(p => p.trim() !== '')
+                photos: parsePhotoUrls(document.getElementById('banner-photos').value)
             };
 
             if (!currentData.banners) currentData.banners = [];
@@ -2398,18 +2418,21 @@
             }
             saveData(currentData);
             cancelVidEdit();
-            alert('¡Sermón publicado! Ahora aparecerá en primer lugar marcado como ¡NUEVO!');
+            alert('¡Sermón publicado!');
         };
 
+        // GUARDADO DE ÁLBUM CON LIMPIEZA AUTOMÁTICA DE URLS
         window.saveAlbum = (e) => {
             e.preventDefault();
             const editId = document.getElementById('album-edit-id').value;
+            const rawPhotosInput = document.getElementById('album-photos').value;
+
             const albumData = {
                 id: editId || Date.now().toString(),
                 title: document.getElementById('album-title').value,
                 cover: document.getElementById('album-cover').value,
                 desc: document.getElementById('album-desc').value,
-                photos: document.getElementById('album-photos').value.split('\n').filter(p => p.trim() !== '')
+                photos: parsePhotoUrls(rawPhotosInput)
             };
 
             if (!currentData.albums) currentData.albums = [];
@@ -2417,11 +2440,11 @@
                 const idx = currentData.albums.findIndex(a => a.id === editId);
                 if (idx !== -1) currentData.albums[idx] = albumData;
             } else {
-                currentData.albums.push(albumData);
+                currentData.albums.unshift(albumData);
             }
             saveData(currentData);
             cancelAlbumEdit();
-            alert('Álbum guardado correctamente!');
+            alert('¡Álbum de fotos guardado correctamente!');
         };
 
         window.saveSchedule = (e) => {
