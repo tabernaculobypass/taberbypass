@@ -809,7 +809,7 @@
     <!-- AOS JS CDN -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE, DEEP LINKING Y CONTADOR DE VISITAS -->
+    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE, DEEP LINKING Y ETIQUETA "NUEVO" EN SERMONES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -994,7 +994,7 @@
                 { id: "1", title: "Perseverando en la prueba", author: "Pastor Roger", date: "1 Oct, 2026", img: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&q=80&w=1200", content: "La palabra de Dios nos recuerda en Santiago 1:12..." }
             ],
             videos: [
-                { id: "1", title: "El Poder de la Oración", author: "Pastor Roger", ytId: "dQw4w9WgXcQ", audioUrl: "https://jumpshare.com/v/sample.mp3" }
+                { id: "1", title: "El Poder de la Oración", author: "Pastor Roger", ytId: "dQw4w9WgXcQ", audioUrl: "https://jumpshare.com/v/sample.mp3", timestamp: 1711900000000 }
             ],
             albums: [
                 { id: "1", title: "Culto Especial de Aniversario", desc: "Momentos inolvidables", cover: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800", photos: ["https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800"] }
@@ -1558,7 +1558,9 @@
                 badge.innerText = "Sermones";
                 backBar.classList.remove('hidden');
 
-                const sermons = currentData.videos || [];
+                // OBTENER SERMONES Y ORDENARLOS DESDE EL MÁS RECIENTE
+                const sermons = getSortedSermons();
+                const newestSermonId = sermons.length > 0 ? sermons[0].id : null;
                 const groupedSermons = {};
 
                 sermons.forEach(v => {
@@ -1577,7 +1579,7 @@
                                 <span>Sermones ${authorName}</span>
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                ${renderSermonsHTML(authorSermons)}
+                                ${renderSermonsHTML(authorSermons, newestSermonId)}
                             </div>
                         </div>
                     `;
@@ -1587,7 +1589,7 @@
                     <div class="text-center mb-8" data-aos="fade-up">
                         <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Biblioteca Pastoral</span>
                         <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2">Sermones</h2>
-                        <p class="text-gray-500 mt-2">Mensajes organizados por pastor</p>
+                        <p class="text-gray-500 mt-2">Mensajes organizados por pastor (Mostrando los más recientes primero)</p>
                     </div>
                     ${sectionsHTML}
                 `;
@@ -1622,18 +1624,39 @@
             }
         };
 
-        function renderSermonsHTML(videoList) {
+        // OBTIENE Y ORDENA LOS SERMONES (EL MÁS RECIENTE PRIMERO)
+        function getSortedSermons() {
+            const sermons = currentData.videos ? [...currentData.videos] : [];
+            return sermons.sort((a, b) => {
+                const tA = a.timestamp || parseInt(a.id) || 0;
+                const tB = b.timestamp || parseInt(b.id) || 0;
+                return tB - tA;
+            });
+        }
+
+        function renderSermonsHTML(videoList, newestSermonId) {
             if (!videoList || videoList.length === 0) return `<p class="text-gray-500">No hay sermones registrados.</p>`;
             return videoList.map(v => {
                 const hasAudio = v.audioUrl && v.audioUrl.trim() !== '';
+                const isNew = newestSermonId ? v.id === newestSermonId : false;
+
                 return `
-                    <div id="sermon-card-${v.id}" class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300" data-aos="fade-up">
+                    <div id="sermon-card-${v.id}" class="bg-white rounded-2xl shadow border overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300 relative" data-aos="fade-up">
                         <div>
-                            <div class="aspect-video w-full bg-black">
+                            <div class="aspect-video w-full bg-black relative">
+                                ${isNew ? `
+                                    <div class="absolute top-3 left-3 z-10 bg-red-600 text-white font-extrabold text-[11px] uppercase tracking-wider px-3 py-1 rounded-full shadow-lg flex items-center space-x-1.5 animate-pulse border border-red-400">
+                                        <i class="fa-solid fa-sparkles text-amber-300"></i>
+                                        <span>¡NUEVO!</span>
+                                    </div>
+                                ` : ''}
                                 <iframe class="w-full h-full" src="https://www.youtube.com/embed/${parseYtEmbed(v.ytId)}" frameborder="0" allowfullscreen></iframe>
                             </div>
                             <div class="p-5">
-                                <span class="text-xs font-bold text-primary uppercase tracking-wider block mb-1">${v.author}</span>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-bold text-primary uppercase tracking-wider block">${v.author}</span>
+                                    ${isNew ? `<span class="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full">Último Mensaje</span>` : ''}
+                                </div>
                                 <h4 class="font-bold text-gray-900 text-lg leading-snug">${v.title}</h4>
                                 
                                 ${hasAudio ? `
@@ -1841,8 +1864,12 @@
 
             loadHlsStream(data.config.liveTv);
 
-            document.getElementById('videos-grid').innerHTML = renderSermonsHTML((data.videos || []).slice(0, 4));
-            if ((data.videos || []).length > 4) document.getElementById('videos-more-container').classList.remove('hidden');
+            // RENDERIZAR SERMONES ORDENADOS
+            const sortedSermons = getSortedSermons();
+            const newestSermonId = sortedSermons.length > 0 ? sortedSermons[0].id : null;
+
+            document.getElementById('videos-grid').innerHTML = renderSermonsHTML(sortedSermons.slice(0, 4), newestSermonId);
+            if (sortedSermons.length > 4) document.getElementById('videos-more-container').classList.remove('hidden');
 
             document.getElementById('blog-grid').innerHTML = renderBlogsHTML((data.blogs || []).slice(0, 4));
 
@@ -1962,7 +1989,7 @@
                 </div>
             `).join('');
 
-            document.getElementById('admin-videos-list').innerHTML = (data.videos || []).map(v => `
+            document.getElementById('admin-videos-list').innerHTML = getSortedSermons().map(v => `
                 <div class="bg-gray-50 p-3 rounded-xl border flex items-center justify-between">
                     <div>
                         <h5 class="font-bold text-sm text-gray-900">${v.title}</h5>
@@ -2313,15 +2340,19 @@
             alert('Artículo guardado correctamente!');
         };
 
+        // GUARDA EL SERMÓN ADICIONANDO UN MARCADOR DE TIEMPO (TIMESTAMP) PARA EL ORDEN Y ETIQUETA NUEVO
         window.saveVideo = (e) => {
             e.preventDefault();
             const editId = document.getElementById('vid-edit-id').value;
+            const existingVid = editId ? (currentData.videos || []).find(v => v.id === editId) : null;
+
             const vidData = {
                 id: editId || Date.now().toString(),
                 title: document.getElementById('vid-title').value,
                 author: document.getElementById('vid-author').value,
                 ytId: document.getElementById('vid-url').value,
-                audioUrl: document.getElementById('vid-audio-url').value
+                audioUrl: document.getElementById('vid-audio-url').value,
+                timestamp: existingVid ? (existingVid.timestamp || Date.now()) : Date.now()
             };
 
             if (!currentData.videos) currentData.videos = [];
@@ -2333,7 +2364,7 @@
             }
             saveData(currentData);
             cancelVidEdit();
-            alert('Sermón guardado correctamente!');
+            alert('¡Sermón publicado! Ahora aparecerá en primer lugar marcado como ¡NUEVO!');
         };
 
         window.saveAlbum = (e) => {
