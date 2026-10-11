@@ -399,6 +399,16 @@
         </div>
     </div>
 
+    <!-- MODAL LIGHTBOX PARA VER CUALQUIER FOTO EN PANTALLA COMPLETA -->
+    <div id="image-lightbox-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg hidden flex items-center justify-center p-2 sm:p-4 cursor-pointer" onclick="closeImageLightbox()">
+        <button onclick="closeImageLightbox()" class="absolute top-4 right-4 text-white bg-white/20 hover:bg-white/40 w-12 h-12 rounded-full flex items-center justify-center text-2xl transition z-10 shadow-lg">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="relative max-w-5xl max-h-[90vh] flex items-center justify-center p-2" onclick="event.stopPropagation()">
+            <img id="lightbox-full-img" src="" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/20">
+        </div>
+    </div>
+
     <!-- MODAL LOGIN ADMIN -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
@@ -809,7 +819,7 @@
     <!-- AOS JS CDN -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE, DEEP LINKING Y ETIQUETA "NUEVO" EN SERMONES -->
+    <!-- MÓDULO PRINCIPAL DE JAVASCRIPT CON FIREBASE Y AMPLIACIÓN DE IMÁGENES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -835,6 +845,18 @@
         let bannerInterval = null;
         let currentBannerIndex = 0;
         let initialUrlChecked = false;
+
+        // FUNCIONES DE LIGHTBOX / VER FOTO AMPLIADA EN PANTALLA COMPLETA
+        window.openImageLightbox = (imgUrl) => {
+            if (!imgUrl) return;
+            document.getElementById('lightbox-full-img').src = imgUrl;
+            document.getElementById('image-lightbox-modal').classList.remove('hidden');
+        };
+
+        window.closeImageLightbox = () => {
+            document.getElementById('image-lightbox-modal').classList.add('hidden');
+            document.getElementById('lightbox-full-img').src = '';
+        };
 
         // INCREMENTAR CONTADOR DE VISITAS AL ENTRAR A LA PÁGINA
         function incrementVisitCounter() {
@@ -1157,20 +1179,28 @@
                     </div>
 
                     <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-gray-200 space-y-6">
-                        <img src="${b.img}" class="w-full h-80 sm:h-96 object-cover rounded-2xl shadow">
+                        <img src="${b.img}" onclick="openImageLightbox('${b.img}')" class="w-full h-80 sm:h-96 object-cover rounded-2xl shadow cursor-pointer hover:opacity-90 transition">
                         <div class="text-gray-700 text-base sm:text-lg leading-relaxed whitespace-pre-line">
                             ${b.details || 'No hay información detallada adicional para este anuncio.'}
                         </div>
                     </div>
 
                     <div class="space-y-4">
-                        <h3 class="text-2xl font-bold text-gray-900 border-b pb-2 flex items-center space-x-2">
-                            <i class="fa-solid fa-images text-primary"></i>
-                            <span>Galería de Imágenes</span>
+                        <h3 class="text-2xl font-bold text-gray-900 border-b pb-2 flex items-center justify-between">
+                            <span class="flex items-center space-x-2">
+                                <i class="fa-solid fa-images text-primary"></i>
+                                <span>Galería de Imágenes</span>
+                            </span>
+                            <span class="text-xs text-gray-500 font-normal">Toca cualquier imagen para ampliarla</span>
                         </h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             ${photosList.map(pUrl => `
-                                <img src="${pUrl}" class="w-full h-48 object-cover rounded-2xl shadow hover:scale-105 transition duration-300">
+                                <div onclick="openImageLightbox('${pUrl}')" class="group relative overflow-hidden rounded-2xl shadow cursor-pointer bg-gray-100">
+                                    <img src="${pUrl}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                                    <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold text-sm">
+                                        <i class="fa-solid fa-magnifying-glass-plus text-xl"></i>
+                                    </div>
+                                </div>
                             `).join('')}
                         </div>
                     </div>
@@ -1359,7 +1389,7 @@
                     return `
                         <div class="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col md:flex-row hover:shadow-2xl transition duration-300" data-aos="fade-up">
                             <div class="md:w-5/12 h-64 md:h-auto relative overflow-hidden flex-shrink-0 bg-gray-100">
-                                <img src="${cyclePhoto}" class="w-full h-full object-cover">
+                                <img src="${cyclePhoto}" onclick="openImageLightbox('${cyclePhoto}')" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition">
                             </div>
                             <div class="p-6 sm:p-8 md:w-7/12 space-y-4 flex flex-col justify-between">
                                 <div>
@@ -1401,7 +1431,7 @@
                                 if (!imgUrl) return '';
                                 return `
                                     <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 flex flex-col">
-                                        <div class="h-52 overflow-hidden bg-gray-100">
+                                        <div class="h-52 overflow-hidden bg-gray-100 cursor-pointer" onclick="openImageLightbox('${imgUrl}')">
                                             <img src="${imgUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-500">
                                         </div>
                                         ${caption ? `
@@ -1420,7 +1450,7 @@
                     <div class="max-w-5xl mx-auto space-y-12" data-aos="fade-up">
                         
                         <!-- PORTADA DESTACADA -->
-                        <div class="relative rounded-3xl overflow-hidden shadow-2xl min-h-[280px] sm:min-h-[380px] flex items-center justify-center text-center text-white p-6" style="background-image: url('${coverImg}'); background-size: cover; background-position: center;">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl min-h-[280px] sm:min-h-[380px] flex items-center justify-center text-center text-white p-6 cursor-pointer" onclick="openImageLightbox('${coverImg}')" style="background-image: url('${coverImg}'); background-size: cover; background-position: center;">
                             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-slate-950/30"></div>
                             <div class="relative z-10 space-y-3 max-w-3xl">
                                 <span class="bg-amber-400 text-gray-950 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow">
@@ -1900,7 +1930,12 @@
             document.getElementById('modal-album-title').innerText = album.title;
             document.getElementById('modal-album-desc').innerText = album.desc;
             document.getElementById('modal-album-photos').innerHTML = (album.photos || []).map(url => `
-                <img src="${url}" class="rounded-xl w-full h-40 object-cover border shadow">
+                <div onclick="openImageLightbox('${url}')" class="group relative overflow-hidden rounded-xl cursor-pointer border shadow bg-gray-100">
+                    <img src="${url}" class="w-full h-40 object-cover group-hover:scale-105 transition duration-300">
+                    <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold text-xs">
+                        <i class="fa-solid fa-magnifying-glass-plus text-lg"></i>
+                    </div>
+                </div>
             `).join('');
             document.getElementById('album-view-modal').classList.remove('hidden');
         };
@@ -2340,7 +2375,6 @@
             alert('Artículo guardado correctamente!');
         };
 
-        // GUARDA EL SERMÓN ADICIONANDO UN MARCADOR DE TIEMPO (TIMESTAMP) PARA EL ORDEN Y ETIQUETA NUEVO
         window.saveVideo = (e) => {
             e.preventDefault();
             const editId = document.getElementById('vid-edit-id').value;
