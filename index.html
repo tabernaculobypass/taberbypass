@@ -73,11 +73,6 @@
 
                 <!-- BOTONES DE ACCIÓN Y MENÚ MÓVIL HAMBURGUESA -->
                 <div class="flex items-center space-x-2 flex-shrink-0">
-                    <button onclick="openLoginModal()" class="bg-gray-900 hover:bg-gray-800 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow transition hover:shadow-md flex items-center space-x-1.5 duration-200">
-                        <i class="fa-solid fa-lock text-[10px]"></i>
-                        <span class="hidden sm:inline">Panel Admin</span>
-                    </button>
-
                     <!-- BOTÓN HAMBURGUESA PARA MÓVILES -->
                     <button onclick="toggleMobileMenu()" class="md:hidden bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center shadow hover:bg-secondary transition">
                         <i id="mobile-menu-icon" class="fa-solid fa-bars text-lg"></i>
@@ -297,7 +292,7 @@
                 </div>
             </section>
 
-            <!-- BLOG -->
+            <!-- BLOG INICIO (CONSERVA SU VISTA PREVIA DE 4 ARTÍCULOS) -->
             <section id="blog" class="py-16 bg-gray-100/70 border-y border-gray-200 px-4 sm:px-6 lg:px-8">
                 <div class="max-w-7xl mx-auto">
                     <div class="text-center mb-10" data-aos="fade-up">
@@ -306,6 +301,12 @@
                         <p class="text-gray-500 mt-2">Lecturas edificantes y reflexiones espirituales</p>
                     </div>
                     <div id="blog-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                    <div id="blogs-more-container" class="mt-10 text-center hidden">
+                        <button onclick="showSingleView('#blog')" class="bg-primary hover:bg-secondary text-white font-bold px-8 py-3.5 rounded-xl shadow transition inline-flex items-center space-x-2">
+                            <span>Ver todos los artículos del blog</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -385,7 +386,7 @@
         </div>
     </div>
 
-    <!-- MODAL ÁLBUM DE FOTOS CORREGIDO -->
+    <!-- MODAL ÁLBUM DE FOTOS -->
     <div id="album-view-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
             <div class="p-6 border-b flex justify-between items-center bg-gray-50 flex-shrink-0">
@@ -395,7 +396,6 @@
                 </div>
                 <button onclick="closeAlbumModal()" class="text-gray-400 hover:text-gray-700 p-2 text-2xl transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <!-- SE APLICÓ UN GRID MÁS LIMPIO Y RESPONSIVO -->
             <div id="modal-album-photos" class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 auto-rows-fr"></div>
         </div>
     </div>
@@ -410,7 +410,7 @@
         </div>
     </div>
 
-    <!-- MODAL LOGIN ADMIN -->
+    <!-- MODAL LOGIN ADMIN (OCULTO DE LA VISTA PÚBLICA, SE ACTIVA VÍA URL O TECLAS) -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
             <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -847,6 +847,136 @@
         let currentBannerIndex = 0;
         let initialUrlChecked = false;
 
+        // LISTADO COMPLETO DE LOS 66 LIBROS DE LA BIBLIA (REINA VALERA 1960)
+        const allBibleBooks = [
+            // Antiguo Testamento
+            { code: "GEN", name: "Génesis", category: "Antiguo Testamento" },
+            { code: "EXO", name: "Éxodo", category: "Antiguo Testamento" },
+            { code: "LEV", name: "Levítico", category: "Antiguo Testamento" },
+            { code: "NUM", name: "Números", category: "Antiguo Testamento" },
+            { code: "DEU", name: "Deuteronomio", category: "Antiguo Testamento" },
+            { code: "JOS", name: "Josué", category: "Antiguo Testamento" },
+            { code: "JDG", name: "Jueces", category: "Antiguo Testamento" },
+            { code: "RUT", name: "Rut", category: "Antiguo Testamento" },
+            { code: "1SA", name: "1 Samuel", category: "Antiguo Testamento" },
+            { code: "2SA", name: "2 Samuel", category: "Antiguo Testamento" },
+            { code: "1KI", name: "1 Reyes", category: "Antiguo Testamento" },
+            { code: "2KI", name: "2 Reyes", category: "Antiguo Testamento" },
+            { code: "1CH", name: "1 Crónicas", category: "Antiguo Testamento" },
+            { code: "2CH", name: "2 Crónicas", category: "Antiguo Testamento" },
+            { code: "EZR", name: "Esdras", category: "Antiguo Testamento" },
+            { code: "NEH", name: "Nehemías", category: "Antiguo Testamento" },
+            { code: "EST", name: "Ester", category: "Antiguo Testamento" },
+            { code: "JOB", name: "Job", category: "Antiguo Testamento" },
+            { code: "PSA", name: "Salmos", category: "Antiguo Testamento" },
+            { code: "PRO", name: "Proverbios", category: "Antiguo Testamento" },
+            { code: "ECC", name: "Eclesiastés", category: "Antiguo Testamento" },
+            { code: "SNG", name: "Cantares", category: "Antiguo Testamento" },
+            { code: "ISA", name: "Isaías", category: "Antiguo Testamento" },
+            { code: "JER", name: "Jeremías", category: "Antiguo Testamento" },
+            { code: "LAM", name: "Lamentaciones", category: "Antiguo Testamento" },
+            { code: "EZK", name: "Ezequiel", category: "Antiguo Testamento" },
+            { code: "DAN", name: "Daniel", category: "Antiguo Testamento" },
+            { code: "HOS", name: "Oseas", category: "Antiguo Testamento" },
+            { code: "JOL", name: "Joel", category: "Antiguo Testamento" },
+            { code: "AMO", name: "Amós", category: "Antiguo Testamento" },
+            { code: "OBA", name: "Abdías", category: "Antiguo Testamento" },
+            { code: "JON", name: "Jonás", category: "Antiguo Testamento" },
+            { code: "MIC", name: "Miqueas", category: "Antiguo Testamento" },
+            { code: "NAM", name: "Nahúm", category: "Antiguo Testamento" },
+            { code: "HAB", name: "Habacuc", category: "Antiguo Testamento" },
+            { code: "ZEP", name: "Sofonías", category: "Antiguo Testamento" },
+            { code: "HAG", name: "Hageo", category: "Antiguo Testamento" },
+            { code: "ZEC", name: "Zacarías", category: "Antiguo Testamento" },
+            { code: "MAL", name: "Malaquías", category: "Antiguo Testamento" },
+            // Nuevo Testamento
+            { code: "MAT", name: "San Mateo", category: "Nuevo Testamento" },
+            { code: "MRK", name: "San Marcos", category: "Nuevo Testamento" },
+            { code: "LUK", name: "San Lucas", category: "Nuevo Testamento" },
+            { code: "JHN", name: "San Juan", category: "Nuevo Testamento" },
+            { code: "ACT", name: "Hechos", category: "Nuevo Testamento" },
+            { code: "ROM", name: "Romanos", category: "Nuevo Testamento" },
+            { code: "1CO", name: "1 Corintios", category: "Nuevo Testamento" },
+            { code: "2CO", name: "2 Corintios", category: "Nuevo Testamento" },
+            { code: "GAL", name: "Gálatas", category: "Nuevo Testamento" },
+            { code: "EPH", name: "Efesios", category: "Nuevo Testamento" },
+            { code: "PHP", name: "Filipenses", category: "Nuevo Testamento" },
+            { code: "COL", name: "Colosenses", category: "Nuevo Testamento" },
+            { code: "1TH", name: "1 Tesalonicenses", category: "Nuevo Testamento" },
+            { code: "2TH", name: "2 Tesalonicenses", category: "Nuevo Testamento" },
+            { code: "1TI", name: "1 Timoteo", category: "Nuevo Testamento" },
+            { code: "2TI", name: "2 Timoteo", category: "Nuevo Testamento" },
+            { code: "TIT", name: "Tito", category: "Nuevo Testamento" },
+            { code: "PHM", name: "Filemón", category: "Nuevo Testamento" },
+            { code: "HEB", name: "Hebreos", category: "Nuevo Testamento" },
+            { code: "JAS", name: "Santiago", category: "Nuevo Testamento" },
+            { code: "1PE", name: "1 Pedro", category: "Nuevo Testamento" },
+            { code: "2PE", name: "2 Pedro", category: "Nuevo Testamento" },
+            { code: "1JN", name: "1 Juan", category: "Nuevo Testamento" },
+            { code: "2JN", name: "2 Juan", category: "Nuevo Testamento" },
+            { code: "3JN", name: "3 Juan", category: "Nuevo Testamento" },
+            { code: "JUD", name: "Judas", category: "Nuevo Testamento" },
+            { code: "REV", name: "Apocalipsis", category: "Nuevo Testamento" }
+        ];
+
+        // POBLAR EL DESPLEGABLE CON TODOS LOS LIBROS DE LA BIBLIA
+        window.populateBibleBooksSelect = (filterText = '') => {
+            const selectEl = document.getElementById('bible-book-select');
+            if (!selectEl) return;
+            
+            const currentVal = selectEl.value || 'PSA';
+            const query = filterText.toLowerCase().trim();
+            const filtered = allBibleBooks.filter(b => b.name.toLowerCase().includes(query) || b.code.toLowerCase().includes(query));
+
+            let html = '';
+            const ot = filtered.filter(b => b.category === 'Antiguo Testamento');
+            const nt = filtered.filter(b => b.category === 'Nuevo Testamento');
+
+            if (ot.length > 0) {
+                html += `<optgroup label="--- ANTIGUO TESTAMENTO ---">`;
+                ot.forEach(b => {
+                    html += `<option value="${b.code}" ${b.code === currentVal ? 'selected' : ''}>${b.name}</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            if (nt.length > 0) {
+                html += `<optgroup label="--- NUEVO TESTAMENTO ---">`;
+                nt.forEach(b => {
+                    html += `<option value="${b.code}" ${b.code === currentVal ? 'selected' : ''}>${b.name}</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            if (filtered.length === 0) {
+                html = `<option value="">No se encontraron libros</option>`;
+            }
+
+            selectEl.innerHTML = html;
+        };
+
+        window.filterBibleBooks = () => {
+            const searchInput = document.getElementById('bible-search-input');
+            if (searchInput) {
+                populateBibleBooksSelect(searchInput.value);
+            }
+        };
+
+        // ACCESO DISCRETO AL PANEL DE ADMINISTRACIÓN VÍA PARÁMETRO URL O TECLAS
+        function checkAdminAccessUrl() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('admin') || params.has('panel')) {
+                openLoginModal();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                e.preventDefault();
+                openLoginModal();
+            }
+        });
+
         // FUNCIÓN AUXILIAR PARA PARSEAR Y LIMPIAR LISTAS DE URLS DE FOTOS
         function parsePhotoUrls(input) {
             if (!input) return [];
@@ -1074,6 +1204,7 @@
             if (!initialUrlChecked) {
                 initialUrlChecked = true;
                 checkSharedUrlParameters();
+                checkAdminAccessUrl();
             }
         });
 
@@ -1554,22 +1685,15 @@
                     <div class="text-center mb-8" data-aos="fade-up">
                         <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Lectura Bíblica</span>
                         <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2">Santa Biblia - Reina Valera 1960</h2>
-                        <p class="text-gray-500 mt-2">Lee y medita en la Palabra de Dios</p>
+                        <p class="text-gray-500 mt-2">Lee y medita en la Palabra de Dios (Selecciona entre los 66 libros)</p>
                     </div>
 
                     <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-gray-200 max-w-4xl mx-auto space-y-6" data-aos="zoom-in">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Libro:</label>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Buscar / Libro:</label>
+                                <input type="text" id="bible-search-input" onkeyup="filterBibleBooks()" placeholder="Filtrar libro..." class="w-full border rounded-xl p-2.5 mb-1 bg-gray-50 text-xs">
                                 <select id="bible-book-select" onchange="fetchBibleChapter()" class="w-full border rounded-xl p-3 bg-gray-50 text-sm font-semibold">
-                                    <option value="GEN">Génesis</option>
-                                    <option value="EXO">Éxodo</option>
-                                    <option value="PSA" selected>Salmos</option>
-                                    <option value="PRO">Proverbios</option>
-                                    <option value="MAT">San Mateo</option>
-                                    <option value="JHN">San Juan</option>
-                                    <option value="ROM">Romanos</option>
-                                    <option value="REV">Apocalipsis</option>
                                 </select>
                             </div>
                             <div>
@@ -1587,7 +1711,30 @@
                         <div id="bible-verses-container" class="border-t pt-6 text-gray-800 leading-relaxed font-serif text-lg space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div>
                     </div>
                 `;
+                populateBibleBooksSelect();
                 fetchBibleChapter();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => { if (window.AOS) AOS.refresh(); }, 100);
+            } else if (cleanLink === '#blog') {
+                // VISTA COMPLETA DE TODOS LOS ARTÍCULOS DEL BLOG
+                mainContainer.classList.add('hidden');
+                dedicatedContainer.classList.remove('hidden');
+                badge.innerText = "Blog Pastoral";
+                backBar.classList.remove('hidden');
+
+                const allBlogs = currentData.blogs || [];
+
+                dedicatedContent.innerHTML = `
+                    <div class="text-center mb-10" data-aos="fade-up">
+                        <span class="bg-blue-600/10 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Publicaciones pastorales</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2">Blog Pastoral y Reflexiones</h2>
+                        <p class="text-gray-500 mt-2">Mostrando todos los artículos y noticias publicados</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        ${renderBlogsHTML(allBlogs)}
+                    </div>
+                `;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setTimeout(() => { if (window.AOS) AOS.refresh(); }, 100);
             } else if (cleanLink === '#transmision') {
@@ -1638,7 +1785,9 @@
         };
 
         window.fetchBibleChapter = () => {
-            const book = document.getElementById('bible-book-select').value;
+            const selectEl = document.getElementById('bible-book-select');
+            const book = selectEl ? selectEl.value : 'PSA';
+            const bookObj = allBibleBooks.find(b => b.code === book) || { name: book };
             const chapter = document.getElementById('bible-chapter-input').value || 1;
             const container = document.getElementById('bible-verses-container');
 
@@ -1654,9 +1803,10 @@
                 `;
             } else {
                 container.innerHTML = `
-                    <h3 class="text-xl font-bold text-primary font-sans mb-4">Lectura Bíblica (${book} Cap. ${chapter})</h3>
+                    <h3 class="text-xl font-bold text-primary font-sans mb-4">Lectura Bíblica (${bookObj.name} Cap. ${chapter})</h3>
                     <p><sup class="text-xs font-bold text-primary">1</sup> Porque la palabra de Dios es viva y eficaz, y más cortante que toda espada de dos filos; y penetra hasta partir el alma y el espíritu.</p>
                     <p><sup class="text-xs font-bold text-primary">2</sup> Toda la Escritura es inspirada por Dios, y útil para enseñar, para redargüir, para corregir, para instruir en justicia.</p>
+                    <p><sup class="text-xs font-bold text-primary">3</sup> El cielo y la tierra pasarán, pero mis palabras no pasarán.</p>
                 `;
             }
         };
@@ -1905,7 +2055,9 @@
             document.getElementById('videos-grid').innerHTML = renderSermonsHTML(sortedSermons.slice(0, 4), newestSermonId);
             if (sortedSermons.length > 4) document.getElementById('videos-more-container').classList.remove('hidden');
 
-            document.getElementById('blog-grid').innerHTML = renderBlogsHTML((data.blogs || []).slice(0, 4));
+            const allBlogs = data.blogs || [];
+            document.getElementById('blog-grid').innerHTML = renderBlogsHTML(allBlogs.slice(0, 4));
+            if (allBlogs.length > 4) document.getElementById('blogs-more-container').classList.remove('hidden');
 
             document.getElementById('albums-grid').innerHTML = (data.albums || []).map(album => `
                 <div onclick="openAlbumModal('${album.id}')" class="bg-white rounded-2xl shadow border overflow-hidden cursor-pointer hover:shadow-lg transition duration-300" data-aos="fade-up">
@@ -1928,7 +2080,6 @@
             setTimeout(() => { if (window.AOS) AOS.refresh(); }, 200);
         }
 
-        // RENDERIZADO DEL ÁLBUM CORREGIDO Y CON PARSEO DE URLS
         window.openAlbumModal = (id) => {
             const album = (currentData.albums || []).find(a => a.id === id);
             if (!album) return;
@@ -1936,7 +2087,6 @@
             document.getElementById('modal-album-title').innerText = album.title;
             document.getElementById('modal-album-desc').innerText = album.desc;
 
-            // Extraer y limpiar URLs de las fotos
             const photosList = parsePhotoUrls(album.photos);
 
             if (photosList.length === 0) {
@@ -2421,7 +2571,6 @@
             alert('¡Sermón publicado!');
         };
 
-        // GUARDADO DE ÁLBUM CON LIMPIEZA AUTOMÁTICA DE URLS
         window.saveAlbum = (e) => {
             e.preventDefault();
             const editId = document.getElementById('album-edit-id').value;
